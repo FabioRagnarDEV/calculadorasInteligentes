@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plano Justo</title>
+    <link rel="stylesheet" href="/CSS/estiloglobal.css">
+    <link rel="icon" href="https://www.embracon.com.br/apple-icon.png?58c48c1f3c9af0dd" type="image/png">
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css">
+</head>
+<body>
+    <div class="container d-flex flex-column align-items-center justify-content-center py-5"></div>
+    <div class="calculator">
+        <h1>Plano Justo</h1>
+        <div class="image-container">
+            <img src="https://www.projetopack.com.br/2020/wp-content/uploads/2021/07/Embracon.jpg" 
+                alt="Logo Embracon" 
+                style="max-width: 75%; height: auto; border-radius: 25px;">
+        <div class="container">
+            <p>Calcule o valor da parcela após a contemplação no Plano Justo.</p>
+            
+            <div class="input-row">
+                <div class="input-group full-width">
+                    <label>Crédito do Consorciado (R$) <span style="color:red;">*</span></label>
+                    <input type="text" id="credito" placeholder="Ex: R$ 30.000,00" required>
+                </div>
+            </div>
+
+            <div class="input-row">
+                <div class="input-group full-width">
+                    <label>Valor da Parcela (R$) <span style="color:red;">*</span></label>
+                    <input type="text" id="parcela" placeholder="Ex: R$ 525,00" required>
+                </div>
+            </div>
+
+            <div class="button-row">  
+                <button id="btnCalcular">Calcular</button>  
+                <button class="reset" onclick="zerar()">Zerar</button>  
+                <button class="voltar" onclick="window.location.href='/Planos/Planos.html'">Voltar</button>  
+            </div>  
+
+            <div class="result" id="result"></div>
+        </div>
+
+        <div class="confirmation-box" id="confirmationBox" style="display: none;">
+            <p>O valor está compatível com o sistema?</p>
+            <div class="button-row">
+                <button id="btnSim">Sim</button>
+                <button id="btnNao">Não</button>
+            </div>
+        </div>
+
+        <div id="customAlert" class="custom-alert" style="display: none;">
+            <div class="custom-alert-content">
+                <h3>Alerta!</h3>
+                <p id="customAlertMessage"></p>
+                <button id="customAlertOK">OK</button>
+            </div>
+        </div>
+
+        <!-- Modal Personalizado para Mensagem de Boas-Vindas -->
+        <div id="welcomeModal" class="custom-modal" style="display: none;">
+            <div class="custom-alert-content">
+                <h2>Bem-vindo!</h2>
+                <p id="welcomeMessage"></p>
+                <button id="closeWelcomeModal">OK</button>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Campos marcados com <span>*</span> são obrigatórios para realizar o cálculo.</p>
+        </div>
+    </div>
+    <script src="/JS/planoJusto.js"></script>
+    <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

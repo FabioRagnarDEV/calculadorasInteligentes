@@ -1,0 +1,304 @@
+body {  
+    font-family: 'Arial', sans-serif;  
+    background-color: #d31d05fa; /* Vermelho claro */  
+    margin: 0;  
+    display: flex;  
+    justify-content: center;  
+    align-items: flex-start;  
+    height: 100vh;  
+    padding: 5px 2px;  
+    box-sizing: border-box;  
+    flex-wrap: wrap;  
+}  
+
+.calculator {  
+    background: #fff;  
+    border-radius: 15px;  
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);  
+    max-width: 90%;  
+    width: 500px;  
+    padding: 20px;  
+    text-align: center;  
+    color: #333;  
+}  
+
+h1 {  
+    color: #e60000;  
+    font-size: 24px;  
+    margin-bottom: 20px;  
+}  
+
+.container {  
+    display: flex;  
+    flex-direction: column;  
+    gap: 15px;  
+}  
+
+.input-row {  
+    display: flex;  
+    gap: 10px;  
+    justify-content: space-between;  
+    flex-wrap: wrap;  
+}  
+
+.input-group {  
+    flex: 1;  
+    min-width: 48%;  
+    margin-bottom: 10px; /* Adicionado espaçamento entre os grupos */  
+}  
+
+.input-group.full-width {  
+    min-width: 100%;  
+}  
+
+.input-group label {  
+    display: block;  
+    font-size: 14px;  
+    margin-bottom: 5px;  
+    color: #555;  
+    text-align: left;  
+}  
+
+.input-group input {  
+    width: 100%;  
+    padding: 8px 6px; /* Ajustado o padding interno */  
+    border: 1px solid #ccc;  
+    border-radius: 8px;  
+    font-size: 14px;  
+    transition: border-color 0.3s ease;  
+}  
+
+.input-group input:focus {  
+    border-color: #e60000;  
+    outline: none;  
+}  
+
+.input-group input:invalid {  
+    border-color: red;  
+}  
+
+.button-group {  
+    display: flex;  
+    justify-content: space-between;  
+    gap: 10px; /* Espaçamento entre os botões */  
+}  
+
+button {  
+    background-color: #e60000; /* Cor do botão Calcular */  
+    color: #fff; /* Cor do texto */  
+    padding: 12px; /* Espaçamento interno */  
+    border: none; /* Sem borda */  
+    border-radius: 8px; /* Bordas arredondadas */  
+    cursor: pointer; /* Cursor de ponteiro */  
+    font-size: 16px; /* Tamanho da fonte */  
+    transition: background-color 0.3s ease; /* Transição suave */  
+    flex: 1; /* Para ocupar espaço igual */  
+}  
+
+button:hover {  
+    background-color: #b00000; /* Cor ao passar o mouse */  
+}  
+
+button.reset {  
+    background-color: #ccc; /* Cor do botão Zerar */  
+    color: #333; /* Cor do texto */  
+}  
+
+button.reset:hover {  
+    background-color: #999; /* Cor ao passar o mouse */  
+}  
+
+button.voltar {  
+    background-color: #d31d05fa; /* Cor do botão Voltar */  
+    color: #fff; /* Cor do texto */  
+}  
+
+button.voltar:hover {  
+    background-color: #ff4500; /* Cor ao passar o mouse */  
+}  
+
+.result {  
+    margin-top: 20px;  
+    font-size: 18px;  
+    color: #e60000;  
+    font-weight: bold;  
+    word-wrap: break-word;  
+}  
+
+.footer {  
+    margin-top: 20px;  
+    font-size: 14px;  
+    color: #666;  
+}  
+
+.footer span {  
+    color: #e60000;  
+    font-weight: bold;  
+}  
+
+@media (max-width: 768px) {  
+    .input-row {  
+        flex-direction: column;  
+    }  
+
+    button {  
+        font-size: 14px;  
+    }  
+
+    h1 {  
+        font-size: 20px;  
+    }  
+}  
+
+h2 {  
+    font-size: 18px;  
+    color: #e60000;  
+    margin: 20px 0 10px;  
+    text-align: left;  
+    border-bottom: 2px solid #e60000;  
+    padding-bottom: 5px;  
+    width: 100%; /* Garante alinhamento uniforme */  
+    box-sizing: border-box;  
+}  
+
+.image-container img {  
+    max-width: 100%;  
+    height: auto;  
+    border-radius: 20px;  
+    display: block;  
+    margin: 0 auto; /* Centraliza a imagem */  
+}  
+
+.confirmation-box {  
+    margin-top: 20px;  
+    padding: 15px;  
+    background-color: #f9f9f9;  
+    border: 1px solid #ccc;  
+    border-radius: 8px;  
+    text-align: center;  
+}  
+
+.confirmation-box p {  
+    margin-bottom: 15px;  
+    font-size: 16px;  
+    color: #333;  
+}  
+
+.confirmation-box .button-row {  
+    display: flex;  
+    justify-content: center;  
+    gap: 10px;  
+}  
+
+.confirmation-box button {  
+    background-color: #e60000;  
+    color: #fff;  
+    padding: 10px 20px;  
+    border: none;  
+    border-radius: 8px;  
+    cursor: pointer;  
+    font-size: 14px;  
+    transition: background-color 0.3s ease;  
+}  
+
+.confirmation-box button:hover {  
+    background-color: #b00000;  
+}  
+
+.confirmation-box button#btnNao {  
+    background-color: #ccc;  
+    color: #333;  
+}  
+
+.confirmation-box button#btnNao:hover {  
+    background-color: #999;  
+}  
+
+.custom-alert {  
+    position: fixed;  
+    top: 0;  
+    left: 0;  
+    width: 100%;  
+    height: 100%;  
+    background-color: rgba(0, 0, 0, 0.5);  
+    display: flex;  
+    justify-content: center;  
+    align-items: center;  
+    z-index: 1000;  
+}  
+
+.custom-alert-content {  
+    background-color: #fff;  
+    padding: 20px;  
+    border-radius: 8px;  
+    text-align: center;  
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);  
+}  
+
+.custom-alert-content h2 {  
+    margin-bottom: 15px;  
+    font-size: 18px;  
+    color: #333;  
+}  
+
+.custom-alert-content p {  
+    margin-bottom: 20px;  
+    font-size: 16px;  
+    color: #555;  
+}  
+
+.custom-alert-content button {  
+    background-color: #e60000;  
+    color: #fff;  
+    padding: 10px 20px;  
+    border: none;  
+    border-radius: 8px;  
+    cursor: pointer;  
+    font-size: 14px;  
+    transition: background-color 0.3s ease;  
+}  
+
+.custom-alert-content button:hover {  
+    background-color: #b00000;  
+}
+
+
+.button-row {  
+    display: flex;  
+    justify-content: space-between;  
+    gap: 10px; /* Espaçamento entre os botões */  
+}  
+
+button {  
+    background-color: #e60000; /* Cor do botão Calcular */  
+    color: #fff; /* Cor do texto */  
+    padding: 12px; /* Espaçamento interno */  
+    border: none; /* Sem borda */  
+    border-radius: 8px; /* Bordas arredondadas */  
+    cursor: pointer; /* Cursor de ponteiro */  
+    font-size: 16px; /* Tamanho da fonte */  
+    transition: background-color 0.3s ease; /* Transição suave */  
+    flex: 1; /* Para ocupar espaço igual */  
+}  
+
+button:hover {  
+    background-color: #b00000; /* Cor ao passar o mouse */  
+}  
+
+button.reset {  
+    background-color: #ccc; /* Cor do botão Zerar */  
+    color: #333; /* Cor do texto */  
+}  
+
+button.reset:hover {  
+    background-color: #999; /* Cor ao passar o mouse */  
+}  
+
+button.voltar {  
+    background-color: #d31d05fa; /* Cor do botão Voltar */  
+    color: #fff; /* Cor do texto */  
+}  
+
+button.voltar:hover {  
+    background-color: #ff4500; /* Cor ao passar o mouse */  
+}  

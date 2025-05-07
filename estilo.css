@@ -1,0 +1,154 @@
+/* Reset básico */  
+* {  
+    margin: 0;  
+    padding: 0;  
+    box-sizing: border-box;  
+}  
+
+body {  
+    font-family: 'Roboto', sans-serif;  
+    background-color: #d31d05fa; /* Cor de fundo uniforme */  
+    display: flex;  
+    justify-content: center; /* Centraliza horizontalmente */  
+    align-items: center; /* Centraliza verticalmente */  
+    min-height: 100vh;  
+    margin: 0;  
+    padding: 20px;  
+    color: #fff;  
+}  
+
+.container {  
+    text-align: center;  
+    background-color: rgba(255, 255, 255, 0.9); /* Fundo branco semi-transparente */  
+    padding: 30px;  
+    border-radius: 15px;  
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);  
+    max-width: 600px;  
+    width: 100%;  
+}  
+
+h1 {  
+    font-size: 24px;  
+    margin-bottom: 10px;  
+    color: #d31d05fa;  
+}  
+
+p {  
+    font-size: 16px;  
+    margin-bottom: 20px;  
+    color: #666;  
+}  
+
+.button-container {  
+    display: grid;  
+    grid-template-columns: repeat(2, 1fr); /* Dois botões por linha */  
+    gap: 15px;  
+}  
+
+.app-button {  
+    background-color: #d31d05fa;  
+    color: #fff;  
+    padding: 20px;  
+    border: none;  
+    border-radius: 15px; /* Bordas mais arredondadas */  
+    font-size: 16px;  
+    text-align: center;  
+    text-decoration: none;  
+    transition: background-color 0.3s ease, transform 0.3s ease;  
+    display: flex;  
+    justify-content: center;  
+    align-items: center;  
+    aspect-ratio: 1; /* Botões quadrados */  
+}  
+
+.app-button:hover {  
+    background-color: #ff4500; /* Cor mais vibrante ao passar o mouse */  
+    transform: scale(1.05); /* Efeito de zoom */  
+    cursor: pointer;  
+}  
+
+/* Modal Personalizado */  
+.custom-modal {  
+    position: fixed;  
+    top: 0;  
+    left: 0;  
+    width: 100%;  
+    height: 100%;  
+    background-color: rgba(0, 0, 0, 0.5);  
+    display: flex;  
+    justify-content: center;  
+    align-items: center;  
+    z-index: 1000;  
+}  
+
+.custom-modal-content {  
+    background-color: #fff;  
+    padding: 20px;  
+    border-radius: 15px;  
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);  
+    max-width: 400px;  
+    width: 100%;  
+    text-align: center;  
+}  
+
+.custom-modal-content h2 {  
+    margin-bottom: 15px;  
+    font-size: 18px;  
+    color: #d31d05fa;  
+}  
+
+.custom-modal-content input {  
+    width: 100%;  
+    padding: 10px;  
+    margin-bottom: 15px;  
+    border: 1px solid #ccc;  
+    border-radius: 8px;  
+    font-size: 14px;  
+}  
+
+.modal-buttons {  
+    display: flex;  
+    justify-content: space-between;  
+    gap: 10px;  
+}  
+
+.custom-modal-content button {  
+    background-color: #d31d05fa;  
+    color: #fff;  
+    padding: 10px 20px;  
+    border: none;  
+    border-radius: 8px;  
+    cursor: pointer;  
+    font-size: 14px;  
+    transition: background-color 0.3s ease;  
+    flex: 1;  
+}  
+
+.custom-modal-content button:hover {  
+    background-color: #b00000;  
+}  
+
+.custom-modal-content button#cancelName {  
+    background-color: #ccc;  
+    color: #333;  
+}  
+
+.custom-modal-content button#cancelName:hover {  
+    background-color: #999;  
+}  
+
+/* Responsividade */  
+@media (max-width: 600px) {  
+    .button-container {  
+        grid-template-columns: 1fr; /* Uma coluna em telas pequenas */  
+    }  
+
+    h1 {  
+        font-size: 20px;  
+    }  
+
+    .app-button {  
+        font-size: 14px;  
+        padding: 15px;  
+    }  
+}

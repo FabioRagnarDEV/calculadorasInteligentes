@@ -1,0 +1,240 @@
+body {  
+    font-family: 'Arial', sans-serif;  
+    background-color: #d31d05fa; /* Vermelho claro */  
+    margin: 0;  
+    display: flex;  
+    justify-content: center;  
+    align-items: flex-start;  
+    height: 100vh;  
+    padding: 5px 2px;  
+    box-sizing: border-box;  
+    flex-wrap: wrap;  
+}  
+
+.calculator {  
+    background: #fff;  
+    border-radius: 15px;  
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);  
+    max-width: 90%;  
+    width: 500px;  
+    padding: 20px;  
+    text-align: center;  
+    color: #333;  
+}  
+
+h1 {  
+    color: #e60000;  
+    font-size: 24px;  
+    margin-bottom: 20px;  
+}  
+
+.container {  
+    display: flex;  
+    flex-direction: column;  
+    gap: 15px;  
+}  
+
+.input-row {  
+    display: flex;  
+    gap: 10px;  
+    width: 100%;
+}
+
+.input-group {  
+    flex: 1 1 0;  
+    max-width: 100%;  
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}  
+
+.input-group.full-width {  
+    flex: 0 0 100%;  
+    max-width: 100%;  
+}  
+
+.input-group label {  
+    display: block;  
+    font-size: 14px;  
+    margin-bottom: 5px;  
+    color: #555;  
+    text-align: left;  
+}  
+
+.input-group input, .input-group select {  
+    width: 100%;  
+    box-sizing: border-box;
+    padding: 5px 2px;  
+    border: 1px solid #ccc;  
+    border-radius: 8px;  
+    font-size: 14px;  
+    transition: border-color 0.3s ease;  
+}  
+
+.input-group input:focus, .input-group select:focus {  
+    border-color: #e60000;  
+    outline: none;  
+}  
+
+.input-group input:invalid {  
+    border-color: red;  
+}  
+
+.button-row {  
+    display: flex;  
+    justify-content: space-between;  
+    gap: 10px;  
+    margin-top: 10px;
+}  
+
+button {  
+    background-color: #e60000;  
+    color: #fff;  
+    padding: 12px;  
+    border: none;  
+    border-radius: 8px;  
+    cursor: pointer;  
+    font-size: 16px;  
+    transition: background-color 0.3s ease;  
+    flex: 1;  
+}  
+
+button:hover {  
+    background-color: #b00000;  
+}  
+
+button.reset {  
+    background-color: #ccc;  
+    color: #333;  
+}  
+
+button.reset:hover {  
+    background-color: #999;  
+}  
+
+button.voltar {  
+    background-color: #d31d05fa; /* Cor do botão Voltar */  
+    color: #fff; /* Cor do texto */  
+}  
+
+button.voltar:hover {  
+    background-color: #ff4500; /* Cor ao passar o mouse */  
+}  
+
+.result {  
+    margin-top: 20px;  
+    font-size: 18px;  
+    color: #e60000;  
+    font-weight: bold;  
+    word-wrap: break-word;  
+}  
+
+.footer {  
+    margin-top: 20px;  
+    font-size: 14px;  
+    color: #666;  
+}  
+
+.footer span {  
+    color: #e60000;  
+    font-weight: bold;  
+}  
+
+@media (max-width: 768px) {  
+    .input-row {  
+        flex-direction: column;  
+    }  
+
+    button {  
+        font-size: 14px;  
+    }  
+
+    h1 {  
+        font-size: 20px;  
+    }  
+
+    .calculator {  
+        width: 100%;  
+        padding: 15px;  
+    }  
+
+    .input-group, .input-group.full-width {  
+        max-width: 100%;
+        flex: 1 1 100%;
+    }  
+}
+
+h2 {  
+    font-size: 18px;  
+    color: #e60000;  
+    margin: 20px 0 10px;  
+    text-align: left;  
+    border-bottom: 2px solid #e60000;  
+    padding-bottom: 5px;  
+    width: 100%; /* Garante alinhamento uniforme */  
+    box-sizing: border-box;  
+}  
+
+.image-container img {  
+    max-width: 100%;  
+    height: auto;  
+    border-radius: 20px;  
+    display: block;  
+    margin: 0 auto; /* Centraliza a imagem */  
+}
+
+/* Modal de Alerta bonito e centralizado */
+.custom-alert {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.custom-alert-content {
+    background: #fff;
+    color: #222;
+    padding: 24px 18px 18px 18px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 8px 30px rgba(0,0,0,.18);
+    min-width: 260px;
+    max-width: 340px;
+    width: 90vw;
+}
+
+.custom-alert-content h3 {
+    margin: 0 0 8px 0;
+    color: #e60000;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.custom-alert-content p {
+    margin-bottom: 18px;
+    font-size: 16px;
+    color: #333;
+    font-weight: normal;
+}
+
+.custom-alert-content button {
+    background: #e60000;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 36px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background .2s;
+    margin: 0 auto;
+    display: block;
+}
+
+.custom-alert-content button:hover {
+    background: #b00000;
+}

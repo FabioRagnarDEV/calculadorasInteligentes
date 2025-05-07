@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora - Saldo Devedor</title>
+    <link rel="stylesheet" href="estilopróprio.css">
+    <link rel="icon" href="https://www.embracon.com.br/apple-icon.png?58c48c1f3c9af0dd" type="image/png">
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css">
+</head>
+<body>
+    <div class="container d-flex flex-column align-items-center justify-content-center py-5"></div>
+    <div class="calculator">
+        <h1>Calcular Percentual do Saldo Devedor</h1>
+        <div class="image-container">
+            <img src="https://www.projetopack.com.br/2020/wp-content/uploads/2021/07/Embracon.jpg" 
+                alt="Logo Embracon" 
+                style="max-width: 75%; height: auto; border-radius: 25px;">
+        <div class="container">
+            
+            <div class="input-row">
+                <div class="input-group full-width">
+                    <label>Grupo e Cota <span style="color:red;">*</span></label>
+                    <input type="text" id="grupoCota" placeholder="Ex: 00000/0000.00" required>
+                </div>
+            </div>
+
+            <h2>Contratado em:</h2>
+            <div class="input-row">
+                <div class="input-group">
+                    <label>Fundo Comum (%) <span style="color:red;">*</span></label>
+                    <input type="number" id="fundoComum" placeholder="Ex: 100" required>
+                </div>
+                <div class="input-group">
+                    <label>Taxa Administrativa (%) <span style="color:red;">*</span></label>
+                    <input type="number" id="taxaAdministrativa" placeholder="Ex: 17" required>
+                </div>
+            </div>
+            <div class="input-row">
+                <div class="input-group">
+                    <label>Fundo de Reserva (%) <span style="color:red;">*</span></label>
+                    <input type="number" id="fundoReserva" placeholder="Ex: 3" required>
+                </div>
+                <div class="input-group">
+                    <label>Taxa de Adesão (%)</label>
+                    <input type="number" id="taxaAdesao" placeholder="Ex: 1">
+                </div>
+            </div>
+
+            <h2>Percentuais pagos em:</h2>
+            <div class="input-row">
+                <div class="input-group">
+                    <label>Pago em Fundo Comum (%) <span style="color:red;">*</span></label>
+                    <input type="number" id="pagoFundoComum" placeholder="Ex: 22.4789" required>
+                </div>
+                <div class="input-group">
+                    <label>Pago em Fundo Reserva (%) <span style="color:red;">*</span></label>
+                    <input type="number" id="pagoFundoReserva" placeholder="Ex: 0.5479" required>
+                </div>
+            </div>
+            <div class="input-row">
+                <div class="input-group">
+                    <label>Pago em Taxa Administrativa (%) <span style="color:red;">*</span></label>
+                    <input type="number" id="pagoTaxaAdministrativa" placeholder="Ex: 13.4779" required>
+                </div>
+                <div class="input-group">
+                    <label>Pago em Taxa de Adesão (%)</label>
+                    <input type="number" id="pagoTaxaAdesao" placeholder="Ex: 0.5983">
+                </div>
+            </div>
+
+            <div class="button-row">
+                <button id="btnCalcular">Calcular</button>
+                <button class="reset" onclick="zerar()">Zerar</button>
+                <button class="voltar" onclick="window.location.href='/index.html'">Voltar ao Inicio</button>
+            </div>
+
+            <div class="result" id="result"></div>
+        </div>
+
+        <div class="confirmation-box" id="confirmationBox" style="display: none;">
+            <p>O percentual está compatível com o sistema?</p>
+            <div class="button-row">
+                <button id="btnSim">Sim</button>
+                <button id="btnNao">Não</button>
+            </div>
+        </div>
+
+        <div id="customAlert" class="custom-alert" style="display: none;">
+            <div class="custom-alert-content">
+                <h3>Alerta!</h3>
+                <p id="customAlertMessage"></p>
+                <button id="customAlertOK">OK</button>
+            </div>
+        </div>
+
+        <!-- Modal Personalizado para Mensagem de Boas-Vindas -->
+<div id="welcomeModal" class="custom-modal" style="display: none;">
+    <div class="custom-modal-content">
+        <h2>Bem-vindo!</h2>
+        <p id="welcomeMessage"></p>
+        <button id="closeWelcomeModal">OK</button>
+    </div>
+</div>
+
+        <div class="footer">
+            <p>Campos marcados com <span>*</span> são obrigatórios para realizar o cálculo.</p>
+        </div>
+    </div>
+    <script src="/JS/percentualsdscript.js"></script>
+    <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

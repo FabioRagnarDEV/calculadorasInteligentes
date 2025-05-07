@@ -1,0 +1,49 @@
+<!DOCTYPE html>  
+<html lang="pt-BR">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>Calculadoras Inteligentes</title>  
+    <link rel="stylesheet" href="estilo.css">  
+    <link rel="icon" href="https://www.embracon.com.br/apple-icon.png?58c48c1f3c9af0dd" type="image/png">  
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">  
+</head>  
+<body>  
+    <div class="container">  
+        <h1 id="pageTitle">Bem-vindo ao Sistema de Aplicações</h1>  
+        <p>Selecione uma das opções abaixo para acessar a aplicação desejada:</p>  
+        
+        <div class="button-container">  
+            <a href="/PercentualSaldoDevedor/percentualSD.html" class="app-button">1 - Calculadora Percentual Saldo Devedor</a>  
+            <a href="/PagamentoAmaior/pagamentoAmaior.html" class="app-button">2 - Pagamento a Maior</a>  
+            <a href="/DevolucaoValores/devolucaovalores.html" class="app-button">3 - Devolução de Valores</a>  
+            <a href="/Planos/planos.html" class="app-button">4 - Planos </a>  
+            <a href="/RenegociaçãoDeLance/renegociaçãoDeLance.html" class="app-button">5 - Renegociação de Lance </a>  
+            <a href="" class="app-button">6 - TRGA</a>  
+        </div>  
+    </div>  
+
+    <!-- Modal Personalizado para Coletar o Nome -->  
+    <div id="nameModal" class="custom-modal" style="display: none;">  
+        <div class="custom-modal-content" aria-labelledby="nameModalTitle">  
+            <h2 id="nameModalTitle">Qual o seu nome?</h2>  
+            <input type="text" id="nameInput" placeholder="Digite seu nome" aria-required="true">  
+            <div class="modal-buttons">  
+                <button id="confirmName">OK</button>  
+                <button id="cancelName">Cancelar</button>  
+            </div>  
+        </div>  
+    </div>  
+
+    <!-- Modal Personalizado para Mensagem de Boas-Vindas -->  
+    <div id="welcomeModal" class="custom-modal" style="display: none;">  
+        <div class="custom-modal-content" aria-labelledby="welcomeModalTitle">  
+            <h2 id="welcomeModalTitle">Alerta!</h2>  
+            <p id="welcomeMessage"></p>  
+            <button id="closeWelcomeModal">OK</button>  
+        </div>  
+    </div>  
+
+    <script src="/JS/homescript.js"></script>  
+</body>  
+</html>

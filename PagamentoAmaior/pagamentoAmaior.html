@@ -1,0 +1,63 @@
+<!DOCTYPE html>  
+<html lang="pt-BR">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>Pagamento A Maior</title>  
+    <link rel="stylesheet" href="/CSS/estiloglobal.css">  
+    <link rel="icon" href="https://www.embracon.com.br/apple-icon.png?58c48c1f3c9af0dd" type="image/png">  
+</head>  
+<body>  
+    <div class="calculator">  
+        <div class="calculator-content">  
+            <h1>Calcular Pagamento a Maior</h1>  
+            <div class="image-container">  
+                <img src="https://www.projetopack.com.br/2020/wp-content/uploads/2021/07/Embracon.jpg"   
+                    alt="Logo Embracon">  
+            </div>  
+            
+            <div class="input-row">  
+                <div class="input-group full-width">  
+                    <label>Grupo e Cota <span style="color:red;">*</span></label>  
+                    <input type="text" id="grupoCota" placeholder="Ex: 00000/0000.00" required>  
+                </div>  
+            </div>  
+
+            <div class="input-group">  
+                <label for="percentualPago">Percentual Pago <span style="color:red;">*</span></label>  
+                <input type="number" id="percentualPago" placeholder="Ex: 100.9862" required>  
+            </div>  
+            <div class="input-group">  
+                <label for="valorBem">Valor do Bem (R$) <span style="color:red;">*</span></label>  
+                <input type="text" id="valorBem" placeholder="Ex: 104.074,16" required>  
+            </div>  
+            <div class="button-group">  
+                <button id="btnCalcular">Calcular</button>  
+                <button class="reset" onclick="zerar()">Zerar</button>  
+                <button class="voltar" onclick="window.location.href='/index.html'">Voltar ao Inicio</button> 
+            </div>  
+            <div class="result" id="result"></div>  
+        </div>  
+        
+        <div class="confirmation-box" id="confirmationBox" style="display: none;">  
+            <p>O valor a ser devolvido está em conformidade com o sistema?</p>  
+            <div class="button-row">  
+                <button id="btnSim">Sim</button>  
+                <button id="btnNao">Não</button>  
+            </div>  
+        </div>  
+
+        <div id="customAlert" class="custom-alert" style="display: none;">  
+            <div class="custom-alert-content">  
+                <h3>Alerta!</h3>  
+                <p id="customAlertMessage"></p>  
+                <button id="customAlertOK">OK</button>  
+            </div>  
+        </div>  
+        <div class="footer">  
+            <p>Campos marcados com <span>*</span> são obrigatórios para realizar o cálculo.</p>  
+        </div>  
+    </div>  
+    <script src="/JS/pagamentoamiorscript.js"></script>  
+</body>  
+</html>  
