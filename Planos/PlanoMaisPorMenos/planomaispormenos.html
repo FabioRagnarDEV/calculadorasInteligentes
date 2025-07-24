@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plano Mais por Menos</title>
+    <link rel="stylesheet" href="/CSS/estiloglobal.css">
+    <link rel="icon" href="https://www.embracon.com.br/apple-icon.png?58c48c1f3c9af0dd" type="image/png">
+</head>
+<body>
+    <div class="calculator">
+        <h1>Plano Mais por Menos</h1>
+        <div class="container">
+            <h2>Dados do Contrato</h2>
+            <div class="input-row">
+                <div class="input-group">
+                    <label>Valor do Crédito (R$) <span style="color:red;">*</span></label>
+                    <input type="text" id="credito" placeholder="Ex: 100.000,00" required>
+                </div>
+                <div class="input-group">
+                    <label>Prazo Total (Meses) <span style="color:red;">*</span></label>
+                    <input type="number" id="prazo" placeholder="Ex: 100" required>
+                </div>
+            </div>
+
+            <h2>Taxas do Plano (%)</h2>
+            <div class="input-row">
+                <div class="input-group">
+                    <label>Taxa de Administração (%) <span style="color:red;">*</span></label>
+                    <input type="number" id="taxaAdmin" placeholder="Ex: 19" required>
+                </div>
+                <div class="input-group">
+                    <label>Fundo de Reserva (%)</label>
+                    <input type="number" id="fundoReserva" placeholder="Ex: 2">
+                </div>
+            </div>
+            
+            <h2>Dados para Cálculo Pós-Contemplação</h2>
+             <div class="input-row">
+                <div class="input-group">
+                    <label>Mês da Contemplação <span style="color:red;">*</span></label>
+                    <input type="number" id="mesContemplacao" placeholder="Ex: 12" required>
+                </div>
+                 <div class="input-group">
+                    <label>Redução da Parcela (%) <span style="color:red;">*</span></label>
+                    <select id="percentualReducao" required>
+                        <option value="25" selected>25%</option>
+                        <option value="50">50%</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="button-row">
+                <button id="btnCalcular">Calcular</button>
+                <button class="reset" onclick="zerar()">Zerar</button>
+                <button class="voltar" onclick="window.location.href='/Planos/planos.html'">Voltar</button>
+            </div>
+
+            <div class="result" id="result"></div>
+        </div>
+    </div>
+    <script src="/JS/planoMaisPorMenos.js"></script>
+</body>
+</html>

@@ -261,3 +261,38 @@ h2 {
 .custom-alert-content button:hover {  
     background-color: #b00000;  
 }  
+
+.input-group select {
+    width: 100%;
+    padding: 8px 6px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 14px;
+    background-color: #fff; /* Fundo branco para o select */
+    transition: border-color 0.3s ease;
+}
+
+.input-group select:focus {
+    border-color: #e60000;
+    outline: none;
+}
+
+.result-section {
+    padding: 15px;
+    margin-top: 10px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+.result-section h3 {
+    margin-top: 0;
+    font-size: 18px;
+    color: #333;
+}
+
+.result-section p {
+    font-size: 20px;
+    font-weight: bold;
+    color: #e60000;
+    margin-bottom: 5px;
+}
