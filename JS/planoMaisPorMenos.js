@@ -29,8 +29,8 @@ document.addEventListener('DOMContentLoaded', function () {
             alert("Por favor, preencha todos os campos obrigatórios (*).");
             return;
         }
-        if (mesContemplacao > prazo || mesContemplacao < 1) {
-            alert("O mês da contemplação não pode ser maior que o prazo do plano.");
+        if (mesContemplacao >= prazo || mesContemplacao < 1) {
+            alert("O mês da contemplação deve ser menor que o prazo do plano.");
             return;
         }
 
@@ -38,34 +38,27 @@ document.addEventListener('DOMContentLoaded', function () {
         const fundoComum = 100;
         const idealTotalPercentual = fundoComum + taxaAdmin + fundoReserva;
         const idealMensalPercentual = idealTotalPercentual / prazo;
-
-        // Aplica a redução de 75% (1 - 0.25) ou 50% (1 - 0.50)
+        
         const fatorReducao = 1 - (percentualReducao / 100);
         const idealMensalReduzido = idealMensalPercentual * fatorReducao;
         const parcelaReduzida = credito * (idealMensalReduzido / 100);
 
-        // --- 3. CÁLCULO DA PARCELA APÓS A CONTEMPLAÇÃO ---
+        // --- 3. CÁLCULO DA PARCELA APÓS A CONTEMPLAÇÃO (CORRIGIDO) ---
         
-        // Valor total do plano
-        const valorTotalPlano = credito * (idealTotalPercentual / 100);
-        
-        // Valor total pago até a contemplação
-        const totalPagoAteContemplacao = parcelaReduzida * (mesContemplacao - 1);
-        
-        // Saldo devedor no momento da contemplação
-        const saldoDevedorInicial = valorTotalPlano - totalPagoAteContemplacao;
-        
-        // Diferença dos 25% ou 50% que não foram pagos
-        const diferencaAPagar = credito * (percentualReducao / 100);
-        
-        // Novo saldo devedor, incluindo a diferença
-        const novoSaldoDevedor = saldoDevedorInicial + diferencaAPagar;
-        
-        // Parcelas restantes
-        const parcelasRestantes = prazo - (mesContemplacao - 1);
+        // Parcela cheia (sem a redução)
+        const parcelaCheia = credito * (idealMensalPercentual / 100);
 
-        // Nova parcela cheia
-        const novaParcelaCheia = novoSaldoDevedor / parcelasRestantes;
+        // Valor total da diferença que deixou de ser paga
+        const diferencaTotal = credito * (percentualReducao / 100);
+
+        // Parcelas restantes a partir da assembleia seguinte à da contemplação
+        const parcelasRestantes = prazo - mesContemplacao;
+
+        // Valor da diferença a ser diluído mensalmente
+        const valorDiluidoMensal = parcelasRestantes > 0 ? diferencaTotal / parcelasRestantes : 0;
+
+        // Nova parcela cheia final
+        const novaParcelaCheia = parcelaCheia + valorDiluidoMensal;
         
         // --- 4. EXIBIÇÃO DOS RESULTADOS ---
         const resultadoDiv = document.getElementById('result');
@@ -75,9 +68,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 <p>${parcelaReduzida.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
             </div>
             <div class="result-section" style="background-color: #fce4e4; margin-top: 15px;">
-                <h3>Parcela Após Contemplação (a partir do mês ${mesContemplacao})</h3>
+                <h3>Parcela Após Contemplação (a partir da parcela ${mesContemplacao + 1})</h3>
                 <p>${novaParcelaCheia.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
-                <small>Considerando a diluição da diferença de ${percentualReducao}% nas parcelas restantes.</small>
+                <small>Parcela cheia + diluição da diferença de ${percentualReducao}% nas ${parcelasRestantes} parcelas restantes.</small>
             </div>
         `;
     });
@@ -85,6 +78,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function zerar() {
     document.querySelectorAll('.input-group input, .input-group select').forEach(el => el.value = '');
-    document.getElementById('percentualReducao').value = '25'; // Reseta o select para 25%
+    document.getElementById('percentualReducao').value = '25';
     document.getElementById('result').innerHTML = '';
 }
