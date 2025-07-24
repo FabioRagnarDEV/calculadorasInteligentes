@@ -36,15 +36,15 @@ Calcula o valor a ser restituído a um cliente que cancelou seu plano de consór
 ### 4. 📝 Calculadora de Planos
 Um menu dedicado para simulações de diferentes modalidades de planos de consórcio.
 
-####    convencional. **Plano Convencional**
-   - **Função:** Simula o valor da parcela de um plano de consórcio tradicional.
-   - **Lógica:** O cálculo é baseado no método de "Ideal Mensal". Primeiro, somam-se todos os percentuais (Fundo Comum, Taxa Adm., Fundo de Reserva e Taxa Adm. Antecipada) para obter o "Ideal Total". Esse total é dividido pelo prazo do plano para encontrar o "Ideal Mensal", que, por fim, é multiplicado pelo valor do crédito para definir o valor da parcela.
+#### **Plano Convencional**
+- **Função:** Simula o valor da parcela de um plano de consórcio tradicional.
+- **Lógica:** O cálculo é baseado no método de "Ideal Mensal". Primeiro, somam-se todos os percentuais (Fundo Comum, Taxa Adm., Fundo de Reserva e Taxa Adm. Antecipada) para obter o "Ideal Total". Esse total é dividido pelo prazo do plano para encontrar o "Ideal Mensal", que, por fim, é multiplicado pelo valor do crédito para definir o valor da parcela.
 
-####   **Plano Mais por Menos (25% e 50%)**
-   - **Função:** Calcula o valor da parcela para planos com redução antes da contemplação.
-   - **Lógica:**
-     1.  **Parcela Reduzida (Pré-Contemplação):** Calcula o "Ideal Mensal" (como no plano convencional) e aplica sobre ele um redutor (paga-se apenas 75% ou 50% do valor).
-     2.  **Parcela Cheia (Pós-Contemplação):** Após a contemplação, a diferença do percentual que não foi pago (25% ou 50% do valor do crédito) é calculada e diluída de forma linear nas parcelas restantes, que agora são somadas à parcela cheia (100%).
+#### **Plano Mais por Menos (25% e 50%)**
+- **Função:** Calcula o valor da parcela para planos com redução antes da contemplação.
+- **Lógica:**
+    1.  **Parcela Reduzida (Pré-Contemplação):** Calcula o "Ideal Mensal" (como no plano convencional) e aplica sobre ele um redutor (paga-se apenas 75% ou 50% do valor).
+    2.  **Parcela Cheia (Pós-Contemplação):** Após a contemplação, a diferença do percentual que não foi pago (25% ou 50% do valor do crédito) é calculada e diluída de forma linear nas parcelas restantes, que agora são somadas à parcela cheia (100%).
 
 ### 5. 🔄 Renegociação de Lance
 Uma ferramenta para simular os resultados da renegociação de um lance ofertado pelo cliente.
@@ -76,5 +76,5 @@ Uma ferramenta para simular os resultados da renegociação de um lance ofertado
 
 Desenvolvido com ❤️ por **Fábio França (SAC Eletrônico)**.
 
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-FabioFranca-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)]([https://www.linkedin.com/in/seu-linkedin/](https://www.linkedin.com/in/fabio-fran%C3%A7a-9a332131b/))
-[![GitHub](https://img.shields.io/badge/GitHub-FabioRagnarDEV-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/FabioRagnarDEV)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-fabio--franca-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/fabio-fran%C3%A7a-9a332131b/)
+[![GitHub](https://img.shields.io/badge/GitHub-FabioRagnarDEV-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/FabioRagnarDEV/)
