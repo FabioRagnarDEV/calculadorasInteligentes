@@ -10,42 +10,47 @@
 <body>
     <div class="calculator">
         <h1>Plano Convencional</h1>
-        <div class="image-container">
-            <img src="https://www.projetopack.com.br/2020/wp-content/uploads/2021/07/Embracon.jpg"
-                 alt="Logo Embracon"
-                 style="max-width: 75%; height: auto; border-radius: 25px;">
-        </div>
         <div class="container">
+            <h2>Dados do Contrato</h2>
             <div class="input-row">
                 <div class="input-group">
                     <label>Valor do Crédito (R$) <span style="color:red;">*</span></label>
-                    <input type="text" id="credito" placeholder="Ex: 32.500,00" required>
+                    <input type="text" id="valorCredito" placeholder="Ex: 100.000,00" required>
                 </div>
                 <div class="input-group">
-                    <label>Total de Parcelas <span style="color:red;">*</span></label>
-                    <input type="number" id="parcelas" placeholder="Ex: 60" required>
+                    <label>Prazo Total (Meses) <span style="color:red;">*</span></label>
+                    <input type="number" id="prazo" placeholder="Ex: 60" required>
                 </div>
             </div>
 
-            <h2>Percentuais Contratados:</h2>
+            <h2>Taxas e Seguros</h2>
             <div class="input-row">
                 <div class="input-group">
-                    <label>Fundo Comum (%) <span style="color:red;">*</span></label>
-                    <input type="number" id="fundoComum" placeholder="Ex: 100" required>
-                </div>
-                <div class="input-group">
-                    <label>Taxa de Administração (%) <span style="color:red;">*</span></label>
-                    <input type="number" id="taxaAdmin" placeholder="Ex: 9" required>
-                </div>
-            </div>
-            <div class="input-row">
-                <div class="input-group">
-                    <label>Fundo de Reserva (%)</label>
-                    <input type="number" id="fundoReserva" placeholder="Ex: 3">
+                    <label>Taxa de Adm. Total (%) <span style="color:red;">*</span></label>
+                    <input type="number" id="taxaAdminTotal" placeholder="Ex: 15" required>
+                    <small id="taxaAdminTotalValue" class="currency-preview"></small>
                 </div>
                 <div class="input-group">
                     <label>Taxa de Adm. Antecipada (%)</label>
-                    <input type="number" id="taxaAdminAntecipada" placeholder="Ex: 9">
+                    <input type="number" id="taxaAdminAntecipada" placeholder="Ex: 2">
+                    <small id="taxaAdminAntecipadaValue" class="currency-preview"></small>
+                </div>
+            </div>
+            <div class="input-row">
+                 <div class="input-group">
+                    <label>Fundo de Reserva (%)</label>
+                    <input type="number" id="fundoReserva" placeholder="Ex: 3">
+                    <small id="fundoReservaValue" class="currency-preview"></small>
+                </div>
+                 <div class="input-group">
+                    <label>Seguro (Valor Mensal R$)</label>
+                    <input type="text" id="seguro" placeholder="Ex: 35,50">
+                </div>
+            </div>
+            <div class="input-row">
+                 <div class="input-group full-width">
+                    <label>Nº de Parcelas da Taxa Antecipada</label>
+                    <input type="number" id="parcelasAntecipadas" placeholder="Ex: 6">
                 </div>
             </div>
 
@@ -57,11 +62,7 @@
 
             <div class="result" id="result"></div>
         </div>
-        <div class="footer">
-            <p>Campos marcados com <span>*</span> são obrigatórios para realizar o cálculo.</p>
-        </div>
     </div>
     <script src="/JS/planoConvencional.js"></script>
-    <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>  
-</body>  
-</html>  
+</body>
+</html>

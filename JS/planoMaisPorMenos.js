@@ -1,83 +1,159 @@
 document.addEventListener('DOMContentLoaded', function () {
 
-    // Função para formatar o campo de crédito em tempo real
-    const creditoInput = document.getElementById('credito');
-    creditoInput.addEventListener('input', function (e) {
-        let value = e.target.value.replace(/\D/g, '');
-        if (!value) {
-            e.target.value = '';
-            return;
+    // --- LÓGICA DE ATUALIZAÇÃO DE VALORES EM TEMPO REAL ---
+    const inputsToWatch = ['valorCredito', 'taxaAdminTotal', 'taxaAdminAntecipada', 'fundoReserva'];
+    inputsToWatch.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.addEventListener('input', updateCurrencyPreviews);
         }
-        const numberValue = parseFloat(value) / 100;
-        e.target.value = numberValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     });
 
-    // Função principal de cálculo
+    function updateCurrencyPreviews() {
+        const valorCredito = parseFloat(document.getElementById('valorCredito').value.replace('R$', '').replace(/\./g, '').replace(',', '.').trim()) || 0;
+
+        const taxaAdminTotalPercent = parseFloat(document.getElementById('taxaAdminTotal').value) || 0;
+        document.getElementById('taxaAdminTotalValue').textContent = formatAsCurrency(valorCredito * (taxaAdminTotalPercent / 100));
+
+        const taxaAdminAntecipadaPercent = parseFloat(document.getElementById('taxaAdminAntecipada').value) || 0;
+        document.getElementById('taxaAdminAntecipadaValue').textContent = formatAsCurrency(valorCredito * (taxaAdminAntecipadaPercent / 100));
+
+        const fundoReservaPercent = parseFloat(document.getElementById('fundoReserva').value) || 0;
+        document.getElementById('fundoReservaValue').textContent = formatAsCurrency(valorCredito * (fundoReservaPercent / 100));
+    }
+    
+    // --- FUNÇÕES DE FORMATAÇÃO DE MOEDA ---
+    function formatCurrencyInput(inputId) {
+        const input = document.getElementById(inputId);
+        if (!input) return;
+        input.addEventListener('input', function (e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (!value) { e.target.value = ''; return; }
+            const numberValue = parseFloat(value) / 100;
+            e.target.value = (inputId === 'valorCredito') 
+                ? numberValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+                : numberValue.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        });
+    }
+    formatCurrencyInput('valorCredito');
+    formatCurrencyInput('seguro');
+    
+    function formatAsCurrency(value) {
+        if (isNaN(value) || value === 0) return '';
+        return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    // --- FUNÇÃO PRINCIPAL DE CÁLCULO ---
     document.getElementById('btnCalcular').addEventListener('click', function () {
-        // --- 1. CAPTURA DOS DADOS ---
-        const creditoValue = document.getElementById('credito').value;
-        const prazo = parseInt(document.getElementById('prazo').value);
-        const taxaAdmin = parseFloat(document.getElementById('taxaAdmin').value) || 0;
+        const valorCredito = parseFloat(document.getElementById('valorCredito').value.replace('R$', '').replace(/\./g, '').replace(',', '.').trim()) || 0;
+        const prazo = parseInt(document.getElementById('prazo').value) || 0;
+        const taxaAdminTotal = parseFloat(document.getElementById('taxaAdminTotal').value) || 0;
+        const taxaAdminAntecipada = parseFloat(document.getElementById('taxaAdminAntecipada').value) || 0;
         const fundoReserva = parseFloat(document.getElementById('fundoReserva').value) || 0;
-        const mesContemplacao = parseInt(document.getElementById('mesContemplacao').value);
-        const percentualReducao = parseFloat(document.getElementById('percentualReducao').value) || 25;
+        const seguroMensal = parseFloat(document.getElementById('seguro').value.replace(/\./g, '').replace(',', '.')) || 0;
+        const parcelasAntecipadas = parseInt(document.getElementById('parcelasAntecipadas').value) || 0;
+        const mesContemplacao = parseInt(document.getElementById('mesContemplacao').value) || 0;
+        const percentualPlano = parseFloat(document.getElementById('percentualPlano').value) || 0.75;
 
-        const credito = parseFloat(creditoValue.replace('R$', '').replace(/\./g, '').replace(',', '.').trim());
-
-        // Validação
-        if (isNaN(credito) || isNaN(prazo) || isNaN(taxaAdmin) || isNaN(mesContemplacao)) {
-            alert("Por favor, preencha todos os campos obrigatórios (*).");
-            return;
-        }
-        if (mesContemplacao >= prazo || mesContemplacao < 1) {
-            alert("O mês da contemplação deve ser menor que o prazo do plano.");
+        if (!valorCredito || !prazo || !taxaAdminTotal) {
+            alert("Por favor, preencha os campos obrigatórios (*).");
             return;
         }
 
-        // --- 2. CÁLCULO DA PARCELA ANTES DA CONTEMPLAÇÃO ---
-        const fundoComum = 100;
-        const idealTotalPercentual = fundoComum + taxaAdmin + fundoReserva;
-        const idealMensalPercentual = idealTotalPercentual / prazo;
+        // --- CÁLCULOS ---
+        const totalFundoReserva = (fundoReserva / 100) * valorCredito;
+        const totalAdmin = (taxaAdminTotal / 100) * valorCredito;
+        const totalAdminAntecipado = (taxaAdminAntecipada / 100) * valorCredito;
+        const totalAdminRestante = totalAdmin - totalAdminAntecipado;
+
+        const fcMensalReduzido = (percentualPlano * valorCredito) / prazo;
+        const frMensalReduzido = (percentualPlano * totalFundoReserva) / prazo;
+        const adminAntecipadoMensal = parcelasAntecipadas > 0 ? totalAdminAntecipado / parcelasAntecipadas : 0;
+        const prazoRestanteTA = prazo - parcelasAntecipadas;
+        const adminRestanteMensal = prazoRestanteTA > 0 ? totalAdminRestante / prazoRestanteTA : 0;
+
+        const parcelaInicialAntes = fcMensalReduzido + frMensalReduzido + adminAntecipadoMensal + seguroMensal;
+        const parcelaRestanteAntes = fcMensalReduzido + frMensalReduzido + adminRestanteMensal + seguroMensal;
+
+        let parcelaAposContemplacao = 0;
+        let fcTotalMensal, frTotalMensal, adminTotalMensal, diluicaoFCMensal, diluicaoFRMensal;
+
+        if (mesContemplacao > 0 && mesContemplacao < prazo) {
+            const percentualFaltante = 1 - percentualPlano;
+            const parcelasRestantesPlano = prazo - mesContemplacao;
+            
+            const diferencaFC = percentualFaltante * valorCredito;
+            const diferencaFR = percentualFaltante * totalFundoReserva;
         
-        const fatorReducao = 1 - (percentualReducao / 100);
-        const idealMensalReduzido = idealMensalPercentual * fatorReducao;
-        const parcelaReduzida = credito * (idealMensalReduzido / 100);
-
-        // --- 3. CÁLCULO DA PARCELA APÓS A CONTEMPLAÇÃO (CORRIGIDO) ---
+            diluicaoFCMensal = diferencaFC / parcelasRestantesPlano;
+            diluicaoFRMensal = diferencaFR / parcelasRestantesPlano;
+            
+            adminTotalMensal = totalAdmin / prazo;
+            fcTotalMensal = valorCredito / prazo;
+            frTotalMensal = totalFundoReserva / prazo;
         
-        // Parcela cheia (sem a redução)
-        const parcelaCheia = credito * (idealMensalPercentual / 100);
-
-        // Valor total da diferença que deixou de ser paga
-        const diferencaTotal = credito * (percentualReducao / 100);
-
-        // Parcelas restantes a partir da assembleia seguinte à da contemplação
-        const parcelasRestantes = prazo - mesContemplacao;
-
-        // Valor da diferença a ser diluído mensalmente
-        const valorDiluidoMensal = parcelasRestantes > 0 ? diferencaTotal / parcelasRestantes : 0;
-
-        // Nova parcela cheia final
-        const novaParcelaCheia = parcelaCheia + valorDiluidoMensal;
+            parcelaAposContemplacao = fcTotalMensal + frTotalMensal + adminTotalMensal + seguroMensal + diluicaoFCMensal + diluicaoFRMensal;
+        }
         
-        // --- 4. EXIBIÇÃO DOS RESULTADOS ---
+        // --- EXIBIÇÃO DOS RESULTADOS DETALHADOS ---
         const resultadoDiv = document.getElementById('result');
-        resultadoDiv.innerHTML = `
-            <div class="result-section" style="background-color: #e8f5e9;">
-                <h3>Parcela Antes da Contemplação</h3>
-                <p>${parcelaReduzida.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
-            </div>
-            <div class="result-section" style="background-color: #fce4e4; margin-top: 15px;">
-                <h3>Parcela Após Contemplação (a partir da parcela ${mesContemplacao + 1})</h3>
-                <p>${novaParcelaCheia.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
-                <small>Parcela cheia + diluição da diferença de ${percentualReducao}% nas ${parcelasRestantes} parcelas restantes.</small>
-            </div>
-        `;
+        let htmlResultado = '<h3>Antes da Contemplação:</h3>';
+
+        if (parcelasAntecipadas > 0 && totalAdminAntecipado > 0) {
+            htmlResultado += `
+                <div class="result-section" style="background-color: #e8f5e9;">
+                    <p>Valor das <strong>${parcelasAntecipadas}</strong> primeiras parcelas: <strong>${formatAsCurrency(parcelaInicialAntes)}</strong></p>
+                    <ul class="breakdown">
+                        <li><span>Fundo Comum (Reduzido):</span> ${formatAsCurrency(fcMensalReduzido)}</li>
+                        <li><span>Fundo de Reserva (Reduzido):</span> ${formatAsCurrency(frMensalReduzido)}</li>
+                        <li><span>Taxa de Adm. (Antecipada):</span> ${formatAsCurrency(adminAntecipadoMensal)}</li>
+                        ${seguroMensal > 0 ? `<li><span>Seguro:</span> ${formatAsCurrency(seguroMensal)}</li>` : ''}
+                    </ul>
+                </div>
+                 <div class="result-section" style="background-color: #e8f5e9; margin-top: 5px;">
+                    <p>Valor das parcelas seguintes: <strong>${formatAsCurrency(parcelaRestanteAntes)}</strong></p>
+                    <ul class="breakdown">
+                        <li><span>Fundo Comum (Reduzido):</span> ${formatAsCurrency(fcMensalReduzido)}</li>
+                        <li><span>Fundo de Reserva (Reduzido):</span> ${formatAsCurrency(frMensalReduzido)}</li>
+                        <li><span>Taxa de Adm. (Restante):</span> ${formatAsCurrency(adminRestanteMensal)}</li>
+                        ${seguroMensal > 0 ? `<li><span>Seguro:</span> ${formatAsCurrency(seguroMensal)}</li>` : ''}
+                    </ul>
+                </div>`;
+        } else {
+            htmlResultado += `
+                <div class="result-section" style="background-color: #e8f5e9;">
+                    <p>Valor da Parcela: <strong>${formatAsCurrency(parcelaRestanteAntes)}</strong></p>
+                    <ul class="breakdown">
+                        <li><span>Fundo Comum (Reduzido):</span> ${formatAsCurrency(fcMensalReduzido)}</li>
+                        <li><span>Fundo de Reserva (Reduzido):</span> ${formatAsCurrency(frMensalReduzido)}</li>
+                        <li><span>Taxa de Adm.:</span> ${formatAsCurrency(adminRestanteMensal)}</li>
+                        ${seguroMensal > 0 ? `<li><span>Seguro:</span> ${formatAsCurrency(seguroMensal)}</li>` : ''}
+                    </ul>
+                </div>`;
+        }
+
+        if (parcelaAposContemplacao > 0) {
+            htmlResultado += `<h3 style="margin-top: 20px;">Após Contemplação (Sorteio no mês ${mesContemplacao}):</h3>
+                <div class="result-section" style="background-color: #fce4e4;">
+                     <p>Novo valor da parcela: <strong>${formatAsCurrency(parcelaAposContemplacao)}</strong></p>
+                     <ul class="breakdown">
+                        <li><span>Fundo Comum (100%):</span> ${formatAsCurrency(fcTotalMensal)}</li>
+                        <li><span>Fundo de Reserva (100%):</span> ${formatAsCurrency(frTotalMensal)}</li>
+                        <li><span>Taxa de Adm. (Total):</span> ${formatAsCurrency(adminTotalMensal)}</li>
+                        <li><span>Diluição Fundo Comum:</span> ${formatAsCurrency(diluicaoFCMensal)}</li>
+                        <li><span>Diluição Fundo Reserva:</span> ${formatAsCurrency(diluicaoFRMensal)}</li>
+                        ${seguroMensal > 0 ? `<li><span>Seguro:</span> ${formatAsCurrency(seguroMensal)}</li>` : ''}
+                    </ul>
+                     <small>(Considerando diluição da diferença nas ${prazo - mesContemplacao} parcelas restantes)</small>
+                </div>`;
+        }
+        resultadoDiv.innerHTML = htmlResultado;
     });
 });
 
 function zerar() {
-    document.querySelectorAll('.input-group input, .input-group select').forEach(el => el.value = '');
-    document.getElementById('percentualReducao').value = '25';
+    document.querySelectorAll('.input-group input, .input-group select').forEach(input => input.value = '');
+    document.querySelectorAll('.currency-preview').forEach(preview => preview.textContent = '');
+    document.getElementById('percentualPlano').value = '0.75';
     document.getElementById('result').innerHTML = '';
 }

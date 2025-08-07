@@ -15,37 +15,56 @@
             <div class="input-row">
                 <div class="input-group">
                     <label>Valor do Crédito (R$) <span style="color:red;">*</span></label>
-                    <input type="text" id="credito" placeholder="Ex: 100.000,00" required>
+                    <input type="text" id="valorCredito" placeholder="Ex: 100.000,00" required>
                 </div>
                 <div class="input-group">
                     <label>Prazo Total (Meses) <span style="color:red;">*</span></label>
-                    <input type="number" id="prazo" placeholder="Ex: 100" required>
+                    <input type="number" id="prazo" placeholder="Ex: 60" required>
                 </div>
             </div>
 
-            <h2>Taxas do Plano (%)</h2>
+            <h2>Taxas e Seguros</h2>
             <div class="input-row">
                 <div class="input-group">
-                    <label>Taxa de Administração (%) <span style="color:red;">*</span></label>
-                    <input type="number" id="taxaAdmin" placeholder="Ex: 19" required>
+                    <label>Taxa de Adm. Total (%) <span style="color:red;">*</span></label>
+                    <input type="number" id="taxaAdminTotal" placeholder="Ex: 15" required>
+                    <small id="taxaAdminTotalValue" class="currency-preview"></small>
                 </div>
                 <div class="input-group">
-                    <label>Fundo de Reserva (%)</label>
-                    <input type="number" id="fundoReserva" placeholder="Ex: 2">
+                    <label>Taxa de Adm. Antecipada (%)</label>
+                    <input type="number" id="taxaAdminAntecipada" placeholder="Ex: 2">
+                     <small id="taxaAdminAntecipadaValue" class="currency-preview"></small>
                 </div>
             </div>
-            
-            <h2>Dados para Cálculo Pós-Contemplação</h2>
-             <div class="input-row">
-                <div class="input-group">
-                    <label>Mês da Contemplação <span style="color:red;">*</span></label>
-                    <input type="number" id="mesContemplacao" placeholder="Ex: 12" required>
+            <div class="input-row">
+                 <div class="input-group">
+                    <label>Fundo de Reserva (%)</label>
+                    <input type="number" id="fundoReserva" placeholder="Ex: 3">
+                     <small id="fundoReservaValue" class="currency-preview"></small>
                 </div>
                  <div class="input-group">
-                    <label>Redução da Parcela (%) <span style="color:red;">*</span></label>
-                    <select id="percentualReducao" required>
-                        <option value="25" selected>25%</option>
-                        <option value="50">50%</option>
+                    <label>Seguro (Valor Mensal R$)</label>
+                    <input type="text" id="seguro" placeholder="Ex: 30,00">
+                </div>
+            </div>
+             <div class="input-row">
+                 <div class="input-group">
+                    <label>Nº de Parcelas da Taxa Antecipada</label>
+                    <input type="number" id="parcelasAntecipadas" placeholder="Ex: 4">
+                </div>
+                 <div class="input-group">
+                    <label>Mês da Contemplação (Sorteio)</label>
+                    <input type="number" id="mesContemplacao" placeholder="Ex: 10">
+                </div>
+            </div>
+
+             <h2>Tipo de Plano</h2>
+              <div class="input-row">
+                 <div class="input-group full-width">
+                    <label>Percentual de Redução (%) <span style="color:red;">*</span></label>
+                    <select id="percentualPlano" required>
+                        <option value="0.75" selected>Mais por Menos 25% (Paga 75%)</option>
+                        <option value="0.50">Mais por Menos 50% (Paga 50%)</option>
                     </select>
                 </div>
             </div>

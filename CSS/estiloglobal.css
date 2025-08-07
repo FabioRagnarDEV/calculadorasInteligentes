@@ -296,3 +296,32 @@ h2 {
     color: #e60000;
     margin-bottom: 5px;
 }
+
+.currency-preview {
+    display: block;
+    margin-top: 5px;
+    font-size: 13px;
+    color: #e60000;
+    font-weight: bold;
+    height: 15px; /* Altura fixa para evitar que o layout "pule" */
+}
+
+/* Adicionar ao final do estiloglobal.css */
+
+.result-section ul.breakdown {
+    list-style-type: none;
+    padding: 10px 0 0 0;
+    margin: 10px 0 0 0;
+    border-top: 1px solid #ddd;
+    font-size: 14px;
+}
+
+.result-section ul.breakdown li {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+}
+
+.result-section ul.breakdown li span {
+    color: #555;
+}
