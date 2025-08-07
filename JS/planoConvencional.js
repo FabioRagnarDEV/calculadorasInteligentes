@@ -1,66 +1,47 @@
 document.addEventListener('DOMContentLoaded', function () {
 
-    // --- LÓGICA DE ATUALIZAÇÃO EM TEMPO REAL ---
-
-    const inputsToWatch = [
-        'valorCredito',
-        'taxaAdminTotal',
-        'taxaAdminAntecipada',
-        'fundoReserva'
-    ];
-
+    // --- LÓGICA DE ATUALIZAÇÃO DE VALORES EM TEMPO REAL ---
+    const inputsToWatch = ['valorCredito', 'taxaAdminTotal', 'taxaAdminAntecipada', 'fundoReserva'];
     inputsToWatch.forEach(id => {
-        document.getElementById(id).addEventListener('input', updateCurrencyPreviews);
+        const element = document.getElementById(id);
+        if (element) {
+            element.addEventListener('input', updateCurrencyPreviews);
+        }
     });
 
     function updateCurrencyPreviews() {
         const valorCredito = parseFloat(document.getElementById('valorCredito').value.replace('R$', '').replace(/\./g, '').replace(',', '.').trim()) || 0;
-
-        // Taxa de Adm Total
+        
         const taxaAdminTotalPercent = parseFloat(document.getElementById('taxaAdminTotal').value) || 0;
-        const taxaAdminTotalValue = valorCredito * (taxaAdminTotalPercent / 100);
-        document.getElementById('taxaAdminTotalValue').textContent = formatAsCurrency(taxaAdminTotalValue);
+        document.getElementById('taxaAdminTotalValue').textContent = formatAsCurrency(valorCredito * (taxaAdminTotalPercent / 100));
 
-        // Taxa de Adm Antecipada
         const taxaAdminAntecipadaPercent = parseFloat(document.getElementById('taxaAdminAntecipada').value) || 0;
-        const taxaAdminAntecipadaValue = valorCredito * (taxaAdminAntecipadaPercent / 100);
-        document.getElementById('taxaAdminAntecipadaValue').textContent = formatAsCurrency(taxaAdminAntecipadaValue);
+        document.getElementById('taxaAdminAntecipadaValue').textContent = formatAsCurrency(valorCredito * (taxaAdminAntecipadaPercent / 100));
 
-        // Fundo de Reserva
         const fundoReservaPercent = parseFloat(document.getElementById('fundoReserva').value) || 0;
-        const fundoReservaValue = valorCredito * (fundoReservaPercent / 100);
-        document.getElementById('fundoReservaValue').textContent = formatAsCurrency(fundoReservaValue);
-    }
-
-    function formatAsCurrency(value) {
-        if (isNaN(value) || value === 0) {
-            return '';
-        }
-        return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        document.getElementById('fundoReservaValue').textContent = formatAsCurrency(valorCredito * (fundoReservaPercent / 100));
     }
     
-    // --- FUNÇÕES DE FORMATAÇÃO DE MOEDA NOS INPUTS ---
-    
+    // --- FUNÇÕES DE FORMATAÇÃO DE MOEDA ---
     function formatCurrencyInput(inputId) {
         const input = document.getElementById(inputId);
+        if (!input) return;
         input.addEventListener('input', function (e) {
             let value = e.target.value.replace(/\D/g, '');
-            if (!value) {
-                e.target.value = '';
-                return;
-            }
+            if (!value) { e.target.value = ''; return; }
             const numberValue = parseFloat(value) / 100;
-            // Formata com R$ apenas se for o campo de crédito principal
-            if (inputId === 'valorCredito') {
-                 e.target.value = numberValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-            } else {
-                 e.target.value = numberValue.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-            }
+            e.target.value = (inputId === 'valorCredito')
+                ? numberValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+                : numberValue.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         });
     }
-
     formatCurrencyInput('valorCredito');
     formatCurrencyInput('seguro');
+
+    function formatAsCurrency(value) {
+        if (isNaN(value) || value === 0) return '';
+        return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
 
     // --- FUNÇÃO PRINCIPAL DE CÁLCULO (AO CLICAR NO BOTÃO) ---
     document.getElementById('btnCalcular').addEventListener('click', function () {
@@ -92,25 +73,41 @@ document.addEventListener('DOMContentLoaded', function () {
         const parcelaInicial = fundoComumMensal + fundoReservaMensal + adminAntecipadoMensal + seguroMensal;
         const parcelaRestante = fundoComumMensal + fundoReservaMensal + adminRestanteMensal + seguroMensal;
 
+        // --- EXIBIÇÃO DOS RESULTADOS DETALHADOS ---
         const resultadoDiv = document.getElementById('result');
         let htmlResultado = '';
 
         if (parcelasAntecipadas > 0 && totalAdminAntecipado > 0) {
             htmlResultado += `
                 <div class="result-section" style="background-color: #fff0e1;">
-                    <h3>Valor das ${parcelasAntecipadas} primeiras parcelas</h3>
-                    <p>${parcelaInicial.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
+                    <h3>Valor das ${parcelasAntecipadas} primeiras parcelas: <strong>${formatAsCurrency(parcelaInicial)}</strong></h3>
+                    <ul class="breakdown">
+                        <li><span>Fundo Comum:</span> ${formatAsCurrency(fundoComumMensal)}</li>
+                        <li><span>Taxa de Adm. (Antecipada):</span> ${formatAsCurrency(adminAntecipadoMensal)}</li>
+                        ${fundoReservaMensal > 0 ? `<li><span>Fundo de Reserva:</span> ${formatAsCurrency(fundoReservaMensal)}</li>` : ''}
+                        ${seguroMensal > 0 ? `<li><span>Seguro:</span> ${formatAsCurrency(seguroMensal)}</li>` : ''}
+                    </ul>
                 </div>
                 <div class="result-section" style="background-color: #e8f5e9; margin-top: 15px;">
-                    <h3>Valor das ${prazoRestante} parcelas restantes</h3>
-                    <p>${parcelaRestante.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
+                    <h3>Valor das ${prazoRestante} parcelas restantes: <strong>${formatAsCurrency(parcelaRestante)}</strong></h3>
+                    <ul class="breakdown">
+                        <li><span>Fundo Comum:</span> ${formatAsCurrency(fundoComumMensal)}</li>
+                        <li><span>Taxa de Adm. (Restante):</span> ${formatAsCurrency(adminRestanteMensal)}</li>
+                        ${fundoReservaMensal > 0 ? `<li><span>Fundo de Reserva:</span> ${formatAsCurrency(fundoReservaMensal)}</li>` : ''}
+                        ${seguroMensal > 0 ? `<li><span>Seguro:</span> ${formatAsCurrency(seguroMensal)}</li>` : ''}
+                    </ul>
                 </div>
             `;
         } else {
             htmlResultado += `
                  <div class="result-section" style="background-color: #e8f5e9;">
-                    <h3>Valor da Parcela</h3>
-                    <p>${parcelaRestante.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
+                    <h3>Valor da Parcela: <strong>${formatAsCurrency(parcelaRestante)}</strong></h3>
+                     <ul class="breakdown">
+                        <li><span>Fundo Comum:</span> ${formatAsCurrency(fundoComumMensal)}</li>
+                        <li><span>Taxa de Adm.:</span> ${formatAsCurrency(adminRestanteMensal)}</li>
+                        ${fundoReservaMensal > 0 ? `<li><span>Fundo de Reserva:</span> ${formatAsCurrency(fundoReservaMensal)}</li>` : ''}
+                        ${seguroMensal > 0 ? `<li><span>Seguro:</span> ${formatAsCurrency(seguroMensal)}</li>` : ''}
+                    </ul>
                 </div>
             `;
         }
