@@ -11,7 +11,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Aplica a formatação aos campos de valor
     formatCurrencyInput('valorCredito');
     formatCurrencyInput('valorParcelaAtual');
     formatCurrencyInput('saldoDevedorValor');
@@ -24,7 +23,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // --- FUNÇÃO PRINCIPAL DE CÁLCULO (AO CLICAR NO BOTÃO) ---
     document.getElementById('btnCalcular').addEventListener('click', function () {
         
-        // --- CAPTURA E LIMPEZA DOS DADOS DO FORMULÁRIO ---
         const dadosCota = {
             valorCredito: parseFloat(document.getElementById('valorCredito').value.replace(/\./g, '').replace(',', '.')) || 0,
             saldoDevedorValor: parseFloat(document.getElementById('saldoDevedorValor').value.replace(/\./g, '').replace(',', '.')) || 0,
@@ -32,59 +30,52 @@ document.addEventListener('DOMContentLoaded', function () {
             parcelasRestantes: parseInt(document.getElementById('parcelasRestantes').value) || 0,
             valorParcelaAtual: parseFloat(document.getElementById('valorParcelaAtual').value.replace(/\./g, '').replace(',', '.')) || 0,
             percentualFundoComumParcela: parseFloat(document.getElementById('percentualFundoComumParcela').value) || 0,
-            percentualLance: (parseFloat(document.getElementById('percentualLance').value) || 0) / 100, // Converte para decimal
+            percentualLance: (parseFloat(document.getElementById('percentualLance').value) || 0) / 100,
             regraMensalSegmento: parseFloat(document.getElementById('regraMensalSegmento').value) || 0
         };
 
-        // Validação
         if (Object.values(dadosCota).some(v => v === 0)) {
             alert("Por favor, preencha todos os campos obrigatórios (*).");
             return;
         }
 
-        // --- CÁLCULO USANDO A LÓGICA FORNECIDA ---
         const resultado = calcularRenegociacaoLance(dadosCota);
+        const memoriaCalculoHTML = gerarMemoriaCalculoRenegociacao(dadosCota, resultado);
 
-        // --- EXIBIÇÃO DO RESULTADO DETALHADO ---
         const resultadoDiv = document.getElementById('result');
         resultadoDiv.innerHTML = `
             <div class="result-section" style="background-color: #e8f5e9;">
                 <h3>Nova Parcela Estimada: <strong>${formatAsCurrency(parseFloat(resultado.novoValorParcela))}</strong></h3>
-                <ul class="breakdown">
-                    <li><span>Valor do Lance Considerado:</span> ${formatAsCurrency(resultado.valorLance)}</li>
-                    <li><span>Percentual Amortizado pelo Lance:</span> ${resultado.percentualAmortizadoPeloLance.toFixed(4)}%</li>
-                    <li><span>Novo Saldo Devedor (Percentual):</span> ${resultado.novoSaldoDevedorPercentual.toFixed(4)}%</li>
-                    <li><span>Novo Saldo Devedor (Valor):</span> ${formatAsCurrency(resultado.novoSaldoDevedorValor)}</li>
-                     <li><span>Prazo Utilizado para Cálculo:</span> ${Math.round(resultado.prazoFinalParaCalculo)} meses</li>
-                </ul>
+            </div>
+            <div class="memoria-calculo-container">
+                <button id="btnMemoria" class="btn-memoria">Ver Memória de Cálculo</button>
+                <div id="memoriaCalculo" class="memoria-calculo-content" style="display: none;">
+                    ${memoriaCalculoHTML}
+                </div>
             </div>
         `;
+        
+        // Adiciona o evento de clique ao botão recém-criado
+        document.getElementById('btnMemoria').addEventListener('click', function() {
+            const memoriaDiv = document.getElementById('memoriaCalculo');
+            const isVisible = memoriaDiv.style.display === 'block';
+            memoriaDiv.style.display = isVisible ? 'none' : 'block';
+            this.textContent = isVisible ? 'Ver Memória de Cálculo' : 'Ocultar Memória de Cálculo';
+        });
     });
 
-    /**
-     * Adaptação da função de cálculo para o ambiente da calculadora.
-     * @param {object} dadosCota - Objeto com os dados da cota.
-     * @returns {object} Um objeto com o resultado final e os passos do cálculo.
-     */
     function calcularRenegociacaoLance(dadosCota) {
+        // ... (a função de cálculo que você forneceu permanece exatamente a mesma aqui) ...
         const {
             valorCredito, saldoDevedorValor, saldoDevedorPercentual, parcelasRestantes,
             valorParcelaAtual, percentualFundoComumParcela, percentualLance, regraMensalSegmento
         } = dadosCota;
 
         const valorLance = valorCredito * percentualLance;
-
-        // Passo 1: Converter o Valor do Lance (R$) em Percentual de Amortização (%)
         const percentualAmortizadoPeloLance = (valorLance / valorParcelaAtual) * percentualFundoComumParcela;
-
-        // Passo 2: Calcular o Novo Saldo Devedor (em Percentual)
         const novoSaldoDevedorPercentual = saldoDevedorPercentual - percentualAmortizadoPeloLance;
-
-        // Passo 3: Verificar a "Pegadinha" do Prazo
         const prazoCalculadoIdeal = novoSaldoDevedorPercentual / regraMensalSegmento;
         const prazoFinalParaCalculo = Math.min(prazoCalculadoIdeal, parcelasRestantes);
-
-        // Passo 4: Calcular o Novo Valor da Parcela
         const novoSaldoDevedorValor = saldoDevedorValor - valorLance;
         const novoValorParcela = novoSaldoDevedorValor / prazoFinalParaCalculo;
 
@@ -97,9 +88,48 @@ document.addEventListener('DOMContentLoaded', function () {
             prazoFinalParaCalculo: prazoFinalParaCalculo
         };
     }
+
+    function gerarMemoriaCalculoRenegociacao(dados, resultado) {
+        return `
+            <h4>Passo a Passo do Cálculo</h4>
+            <ul class="breakdown">
+                <li>
+                    <span>1. Valor do Lance (R$)</span>
+                    <small>${formatAsCurrency(dados.valorCredito)} (Crédito) × ${dados.percentualLance * 100}% (Lance)</small>
+                    <span>${formatAsCurrency(resultado.valorLance)}</span>
+                </li>
+                <li>
+                    <span>2. % Amortizado pelo Lance</span>
+                    <small>(${formatAsCurrency(resultado.valorLance)} ÷ ${formatAsCurrency(dados.valorParcelaAtual)}) × ${dados.percentualFundoComumParcela.toFixed(4)}%</small>
+                    <span>${resultado.percentualAmortizadoPeloLance.toFixed(4)}%</span>
+                </li>
+                <li>
+                    <span>3. Novo Saldo Devedor (%)</span>
+                    <small>${dados.saldoDevedorPercentual.toFixed(4)}% - ${resultado.percentualAmortizadoPeloLance.toFixed(4)}%</small>
+                    <span>${resultado.novoSaldoDevedorPercentual.toFixed(4)}%</span>
+                </li>
+                 <li>
+                    <span>4. Prazo para Cálculo (Meses)</span>
+                    <small>Menor valor entre (Novo Saldo % ÷ Ideal Mensal) e Parcelas Restantes</small>
+                    <span>${Math.round(resultado.prazoFinalParaCalculo)}</span>
+                </li>
+                <li>
+                    <span>5. Novo Saldo Devedor (R$)</span>
+                    <small>${formatAsCurrency(dados.saldoDevedorValor)} - ${formatAsCurrency(resultado.valorLance)}</small>
+                    <span>${formatAsCurrency(resultado.novoSaldoDevedorValor)}</span>
+                </li>
+                <li>
+                    <span><strong>6. Nova Parcela (R$)</strong></span>
+                    <small>${formatAsCurrency(resultado.novoSaldoDevedorValor)} ÷ ${Math.round(resultado.prazoFinalParaCalculo)} meses</small>
+                    <span><strong>${formatAsCurrency(parseFloat(resultado.novoValorParcela))}</strong></span>
+                </li>
+            </ul>
+        `;
+    }
 });
 
 function zerar() {
+    // ... (função zerar permanece a mesma) ...
     document.querySelectorAll('.input-group input, .input-group select').forEach(el => {
         if (el.tagName === 'SELECT') {
             el.selectedIndex = 0;
