@@ -1,122 +1,111 @@
-function parseValorReais(valorStr) {
-    if (!valorStr) return 0;
-    return parseFloat(valorStr.replace(/\./g, '').replace(',', '.'));
-}
+document.addEventListener('DOMContentLoaded', function () {
 
-function formatReais(valor) {
-    return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-}
+    // --- FUNÇÕES DE FORMATAÇÃO DE MOEDA (EM TEMPO REAL) ---
+    function formatCurrencyInput(inputId) {
+        const input = document.getElementById(inputId);
+        input.addEventListener('input', function (e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (!value) { e.target.value = ''; return; }
+            const numberValue = parseFloat(value) / 100;
+            e.target.value = numberValue.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        });
+    }
 
-function formatPercentual(valor, casas) {
-    return valor.toFixed(casas);
-}
+    // Aplica a formatação aos campos de valor
+    formatCurrencyInput('valorCredito');
+    formatCurrencyInput('valorParcelaAtual');
+    formatCurrencyInput('saldoDevedorValor');
 
-// Função para exibir o novo modal de alerta centralizado
-function showCustomAlert(message) {
-    document.getElementById('customAlertMessage').textContent = message;
-    document.getElementById('customAlert').style.display = 'flex';
-}
-document.getElementById('customAlertOK').addEventListener('click', function () {
-    document.getElementById('customAlert').style.display = 'none';
-});
+    function formatAsCurrency(value) {
+        if (isNaN(value) || value === 0) return 'R$ 0,00';
+        return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
 
-// Validação visual dos obrigatórios e cálculo
-document.getElementById('btnCalcular').addEventListener('click', function (event) {
-    event.preventDefault();
+    // --- FUNÇÃO PRINCIPAL DE CÁLCULO (AO CLICAR NO BOTÃO) ---
+    document.getElementById('btnCalcular').addEventListener('click', function () {
+        
+        // --- CAPTURA E LIMPEZA DOS DADOS DO FORMULÁRIO ---
+        const dadosCota = {
+            valorCredito: parseFloat(document.getElementById('valorCredito').value.replace(/\./g, '').replace(',', '.')) || 0,
+            saldoDevedorValor: parseFloat(document.getElementById('saldoDevedorValor').value.replace(/\./g, '').replace(',', '.')) || 0,
+            saldoDevedorPercentual: parseFloat(document.getElementById('saldoDevedorPercentual').value) || 0,
+            parcelasRestantes: parseInt(document.getElementById('parcelasRestantes').value) || 0,
+            valorParcelaAtual: parseFloat(document.getElementById('valorParcelaAtual').value.replace(/\./g, '').replace(',', '.')) || 0,
+            percentualFundoComumParcela: parseFloat(document.getElementById('percentualFundoComumParcela').value) || 0,
+            percentualLance: (parseFloat(document.getElementById('percentualLance').value) || 0) / 100, // Converte para decimal
+            regraMensalSegmento: parseFloat(document.getElementById('regraMensalSegmento').value) || 0
+        };
 
-    const inputs = document.querySelectorAll('input[required], select[required]');
-    let allValid = true;
-
-    inputs.forEach(input => {
-        if (!input.value.trim()) {
-            input.style.borderColor = 'red';
-            allValid = false;
-        } else {
-            input.style.borderColor = '';
+        // Validação
+        if (Object.values(dadosCota).some(v => v === 0)) {
+            alert("Por favor, preencha todos os campos obrigatórios (*).");
+            return;
         }
+
+        // --- CÁLCULO USANDO A LÓGICA FORNECIDA ---
+        const resultado = calcularRenegociacaoLance(dadosCota);
+
+        // --- EXIBIÇÃO DO RESULTADO DETALHADO ---
+        const resultadoDiv = document.getElementById('result');
+        resultadoDiv.innerHTML = `
+            <div class="result-section" style="background-color: #e8f5e9;">
+                <h3>Nova Parcela Estimada: <strong>${formatAsCurrency(parseFloat(resultado.novoValorParcela))}</strong></h3>
+                <ul class="breakdown">
+                    <li><span>Valor do Lance Considerado:</span> ${formatAsCurrency(resultado.valorLance)}</li>
+                    <li><span>Percentual Amortizado pelo Lance:</span> ${resultado.percentualAmortizadoPeloLance.toFixed(4)}%</li>
+                    <li><span>Novo Saldo Devedor (Percentual):</span> ${resultado.novoSaldoDevedorPercentual.toFixed(4)}%</li>
+                    <li><span>Novo Saldo Devedor (Valor):</span> ${formatAsCurrency(resultado.novoSaldoDevedorValor)}</li>
+                     <li><span>Prazo Utilizado para Cálculo:</span> ${Math.round(resultado.prazoFinalParaCalculo)} meses</li>
+                </ul>
+            </div>
+        `;
     });
 
-    if (!allValid) {
-        showCustomAlert('Por favor, preencha todos os campos obrigatórios marcados com *.');
-        return;
+    /**
+     * Adaptação da função de cálculo para o ambiente da calculadora.
+     * @param {object} dadosCota - Objeto com os dados da cota.
+     * @returns {object} Um objeto com o resultado final e os passos do cálculo.
+     */
+    function calcularRenegociacaoLance(dadosCota) {
+        const {
+            valorCredito, saldoDevedorValor, saldoDevedorPercentual, parcelasRestantes,
+            valorParcelaAtual, percentualFundoComumParcela, percentualLance, regraMensalSegmento
+        } = dadosCota;
+
+        const valorLance = valorCredito * percentualLance;
+
+        // Passo 1: Converter o Valor do Lance (R$) em Percentual de Amortização (%)
+        const percentualAmortizadoPeloLance = (valorLance / valorParcelaAtual) * percentualFundoComumParcela;
+
+        // Passo 2: Calcular o Novo Saldo Devedor (em Percentual)
+        const novoSaldoDevedorPercentual = saldoDevedorPercentual - percentualAmortizadoPeloLance;
+
+        // Passo 3: Verificar a "Pegadinha" do Prazo
+        const prazoCalculadoIdeal = novoSaldoDevedorPercentual / regraMensalSegmento;
+        const prazoFinalParaCalculo = Math.min(prazoCalculadoIdeal, parcelasRestantes);
+
+        // Passo 4: Calcular o Novo Valor da Parcela
+        const novoSaldoDevedorValor = saldoDevedorValor - valorLance;
+        const novoValorParcela = novoSaldoDevedorValor / prazoFinalParaCalculo;
+
+        return {
+            novoValorParcela: novoValorParcela.toFixed(2),
+            valorLance: valorLance,
+            percentualAmortizadoPeloLance: percentualAmortizadoPeloLance,
+            novoSaldoDevedorPercentual: novoSaldoDevedorPercentual,
+            novoSaldoDevedorValor: novoSaldoDevedorValor,
+            prazoFinalParaCalculo: prazoFinalParaCalculo
+        };
     }
-
-    // --- CÁLCULO ---
-    const valorLance        = parseValorReais(document.getElementById('valorLance').value);
-    const valorParcela      = parseValorReais(document.getElementById('valorParcela').value);
-    const fatorIdealMensal  = parseFloat(document.getElementById('fatorIdealMensal').value.replace(',', '.'));
-    const percentualSaldoDevedor = parseFloat(document.getElementById('percentualSaldoDevedor').value.replace(',', '.'));
-    const saldoDevedor      = parseValorReais(document.getElementById('saldoDevedor').value);
-    const tipoCota          = document.getElementById('tipoCota').value;
-
-    // Validação lógica dos valores (numéricos e seleção de tipo)
-    if ([valorLance, valorParcela, fatorIdealMensal, percentualSaldoDevedor, saldoDevedor].some(isNaN) || tipoCota === "") {
-        document.getElementById('result').innerHTML = "<span style='color:red;'>Por favor, preencha todos os campos obrigatórios corretamente.</span>";
-        document.getElementById('conformidadeSection').style.display = 'none';
-        return;
-    }
-
-    if (valorParcela === 0) {
-        document.getElementById('result').innerHTML = "<span style='color:red;'>O valor da parcela deve ser maior que zero.</span>";
-        document.getElementById('conformidadeSection').style.display = 'none';
-        return;
-    }
-
-    // Passos do cálculo:
-    const percentualLance = ((valorLance / valorParcela) * fatorIdealMensal);
-    const novoPercentualSaldo = percentualSaldoDevedor - percentualLance;
-
-    let percentualParcela;
-    if (tipoCota === "imovel")      percentualParcela = 0.5;
-    else if (tipoCota === "auto")   percentualParcela = 1.0;
-    else if (tipoCota === "pesado") percentualParcela = 0.75;
-    else                            percentualParcela = 1.0; // padrão
-
-    const quantidadeParcelas = Math.max(0, Math.floor(novoPercentualSaldo / percentualParcela));
-    const saldoRemanescente = saldoDevedor - valorLance;
-    const novoValorParcela = quantidadeParcelas > 0 ? (saldoRemanescente / quantidadeParcelas) : 0;
-
-    // Exibe resultado formatado
-    document.getElementById('result').innerHTML =
-        `<h2>Resultados:</h2>
-        <ul style="text-align:left; font-weight:normal;">
-            <li><strong>Percentual do lance:</strong> ${formatPercentual(percentualLance, 4)} %</li>
-            <li><strong>Novo percentual do saldo devedor:</strong> ${formatPercentual(novoPercentualSaldo, 4)} %</li>
-            <li><strong>Quantidade de novas parcelas:</strong> ${quantidadeParcelas}</li>
-            <li><strong>Novo valor da parcela:</strong> ${quantidadeParcelas > 0 ? formatReais(novoValorParcela) : 'N/A'}</li>
-        </ul>`;
-
-    // Mostra seção de conformidade
-    document.getElementById('conformidadeSection').style.display = 'block';
-    document.getElementById('mensagemConformidade').innerHTML = '';
-
-    // Garante que modal está fechado (não interfere no customAlert)
 });
 
-// Eventos dos botões Sim/Não
-document.getElementById('btnSim').addEventListener('click', function() {
-    showCustomAlert('Permanecemos à disposição!');
-});
-document.getElementById('btnNao').addEventListener('click', function() {
-    showCustomAlert('Considere pedir ajuda a seu líder imediato, ou abrir um caso para renegociação de lance');
-});
-
-// Botão de Zerar (limpar campos e resultados)
 function zerar() {
-    document.getElementById('valorLance').value = '';
-    document.getElementById('valorParcela').value = '';
-    document.getElementById('fatorIdealMensal').value = '';
-    document.getElementById('percentualSaldoDevedor').value = '';
-    document.getElementById('saldoDevedor').value = '';
-    document.getElementById('tipoCota').selectedIndex = 0;
+    document.querySelectorAll('.input-group input, .input-group select').forEach(el => {
+        if (el.tagName === 'SELECT') {
+            el.selectedIndex = 0;
+        } else {
+            el.value = '';
+        }
+    });
     document.getElementById('result').innerHTML = '';
-    document.getElementById('conformidadeSection').style.display = 'none';
-
-    // Limpa bordas vermelhas
-    document.querySelectorAll('input, select').forEach(el => el.style.borderColor = '');
-}
-
-// Botão Voltar (redireciona para home ou página anterior)
-function voltar() {
-    window.history.back();
 }
