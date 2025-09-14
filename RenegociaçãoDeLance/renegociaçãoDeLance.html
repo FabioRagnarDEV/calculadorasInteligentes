@@ -4,70 +4,163 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Renegociação de Lance</title>
-    <link rel="stylesheet" href="/CSS/estiloglobal.css">
+    <link rel="stylesheet" href="renegociacaoDeLance.css">
     <link rel="icon" href="https://www.embracon.com.br/apple-icon.png?58c48c1f3c9af0dd" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="calculator">
-        <h1>Renegociação de Lance</h1>
-        <div class="container">
-            <h2>Dados do Contrato</h2>
-            <div class="input-row">
-                <div class="input-group">
-                    <label>Valor do Crédito (R$) <span style="color:red;">*</span></label>
-                    <input type="text" id="valorCredito" placeholder="Ex: 30.000,00" required>
-                </div>
-                <div class="input-group">
-                    <label>Valor da Parcela Atual (R$) <span style="color:red;">*</span></label>
-                    <input type="text" id="valorParcelaAtual" placeholder="Ex: 502,99" required>
-                </div>
-            </div>
-             <div class="input-row">
-                <div class="input-group">
-                    <label>Saldo Devedor (Valor R$) <span style="color:red;">*</span></label>
-                    <input type="text" id="saldoDevedorValor" placeholder="Ex: 37.436,20" required>
-                </div>
-                <div class="input-group">
-                    <label>Saldo Devedor (%) <span style="color:red;">*</span></label>
-                    <input type="number" id="saldoDevedorPercentual" placeholder="Ex: 99,6662" step="0.0001" required>
-                </div>
-            </div>
+    <div class="container">
+        <header>
+            <h1>Renegociação de Lance</h1>
+            <p>Simule valores aproximados após a contemplação.</p>
+        </header>
 
-            <h2>Dados do Plano e Lance</h2>
-             <div class="input-row">
-                <div class="input-group">
-                    <label>Parcelas Restantes <span style="color:red;">*</span></label>
-                    <input type="number" id="parcelasRestantes" placeholder="Ex: 59" required>
+        <main>
+            <form id="calcForm">
+                <div class="card">
+                    <h2>1. Dados da sua Cota</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="valorCredito" title="O valor atual do seu crédito, corrigido.">Valor do Crédito Atual (?)</label>
+                            <input type="text" id="valorCredito" placeholder="R$ 80.000,00" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="prazoTotal" title="O prazo total em meses do seu plano.">Prazo Total do Plano (meses) (?)</label>
+                            <input type="number" id="prazoTotal" placeholder="80" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="parcelasPagas" title="Quantas parcelas você já pagou.">Parcelas Pagas (?)</label>
+                            <input type="number" id="parcelasPagas" placeholder="20" required>
+                        </div>
+                         <div class="form-group">
+                            <label for="taxaAdm" title="Percentual total da taxa de administração.">Taxa de Adm. Total (%) (?)</label>
+                            <input type="number" id="taxaAdm" step="0.0001" placeholder="14.0000" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="fundoReserva" title="Percentual total do fundo de reserva.">Fundo de Reserva Total (%) (?)</label>
+                            <input type="number" id="fundoReserva" step="0.0001" placeholder="2.0000">
+                        </div>
+                         <div class="form-group">
+                            <label for="seguroVida" title="Percentual do seguro de vida sobre o crédito.">Seguro de Vida (%) (?)</label>
+                            <input type="number" id="seguroVida" step="0.0001" placeholder="0.0350">
+                        </div>
+                         <div class="form-group">
+                            <label for="taxaAdmAdesao" title="Taxa de adesão ou adm. antecipada.">Taxa Adm. Antecipada (%) (?)</label>
+                            <input type="number" id="taxaAdmAdesao" step="0.0001" placeholder="0.0000">
+                        </div>
+                         <div class="form-group">
+                            <label for="parcelasAdesao" title="Em quantas parcelas a taxa foi diluída.">Nº Parcelas da Taxa Antecipada (?)</label>
+                            <input type="number" id="parcelasAdesao" placeholder="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="tipoPlano">Plano Contratado</label>
+                            <select id="tipoPlano">
+                                <option value="convencional">Convencional</option>
+                                <option value="mais_por_menos_25" selected>Mais por Menos 25%</option>
+                                <option value="mais_por_menos_50">Mais por Menos 50%</option>
+                                <option value="justo">Plano Justo</option>
+                                <option value="justo_mais_por_menos">Plano Justo + Mais por Menos 25%</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="segmento">Segmento do Bem</label>
+                            <select id="segmento">
+                                <option value="automovel" selected>Automóvel / Moto / Serviços</option>
+                                <option value="imovel">Imóvel</option>
+                                <option value="pesados">Caminhão / Veículos Pesados</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
-                 <div class="input-group">
-                    <label>Fundo Comum na Parcela (%) <span style="color:red;">*</span></label>
-                    <input type="number" id="percentualFundoComumParcela" placeholder="Ex: 1,4334" step="0.0001" required>
-                </div>
-            </div>
-            <div class="input-row">
-                <div class="input-group">
-                    <label>Percentual do Lance (%) <span style="color:red;">*</span></label>
-                    <input type="number" id="percentualLance" placeholder="Ex: 25" required>
-                </div>
-                <div class="input-group">
-                     <label>Segmento (Ideal Mensal) <span style="color:red;">*</span></label>
-                    <select id="regraMensalSegmento" required>
-                        <option value="1.0" selected>Automóvel (1,00%)</option>
-                        <option value="0.5">Moto (0,50%)</option> <option value="1.0">Imóvel (1,00%)</option>
-                        <option value="0.75">Pesado (0,75%)</option>
-                    </select>
-                </div>
-            </div>
 
-            <div class="button-row">
-                <button id="btnCalcular">Calcular Nova Parcela</button>
-                <button class="reset" onclick="zerar()">Zerar</button>
-                <button class="voltar" onclick="window.location.href='/index.html'">Voltar</button>
-            </div>
+                <div class="card">
+                    <h2>2. Simulação do Lance</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="valorLance">Valor Total do Lance (R$)</label>
+                            <input type="text" id="valorLance" placeholder="R$ 28.000,00" required>
+                        </div>
+                        <div class="form-group">
+                            <div class="checkbox-group">
+                                  <input type="checkbox" id="usarLanceEmbutido">
+                                  <label for="usarLanceEmbutido">Usar Lance Embutido (parte do crédito)?</label>
+                            </div>
+                            <div id="lanceEmbutidoPercentContainer" class="hidden">
+                                  <label for="percentualLanceEmbutido">% do Crédito a ser usado como Lance</label>
+                                <input type="number" id="percentualLanceEmbutido" step="0.01" placeholder="25">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group radio-group-container">
+                        <label>Como deseja usar o lance para amortizar o saldo devedor?</label>
+                        <div class="radio-group">
+                            <input type="radio" id="tipoAbatimentoParcela" name="tipoAbatimento" value="parcela" checked>
+                            <label for="tipoAbatimentoParcela">Reduzir o Valor da Parcela (mantendo o prazo)</label>
+                        </div>
+                         <div class="radio-group">
+                            <input type="radio" id="tipoAbatimentoPrazo" name="tipoAbatimento" value="prazo">
+                            <label for="tipoAbatimentoPrazo">Reduzir o Prazo (quitar últimas parcelas)</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="button-row">
+                    <button type="submit" id="simularBtn">Simular Agora</button>
+                    <button type="button" class="reset" onclick="zerar()">Zerar</button>
+                    <button type="button" class="voltar" onclick="window.location.href='/index.html'">Voltar ao Início</button>
+                </div>
+            </form>
 
-            <div class="result" id="result"></div>
+            <div id="resultado" class="card-resultado hidden">
+    <h2>Resultado da Simulação</h2>
+    <div class="resultado-grid">
+        <div class="resultado-col">
+            <h3>Cenário ANTES do Lance</h3>
+            <p>Parcela Mensal: <span id="resAntesParcela"></span></p>
+            <p>Prazo Restante: <span id="resAntesPrazo"></span></p>
+            <p>Saldo Devedor (%): <span id="resAntesSaldoPerc"></span></p>
+            <p>Saldo Devedor (R$): <span id="resAntesSaldoValor"></span></p>
+            <p><small>Ideal Mensal F.C.:</small> <small><span id="resAntesIdealFC"></span></small></p>
+            <p><small>Ideal Mensal Total:</small> <small><span id="resAntesIdealTotal"></span></small></p>
+        </div>
+        <div class="resultado-col">
+            <h3>Cenário DEPOIS do Lance</h3>
+            <p>Nova Parcela Mensal: <span id="resDepoisParcela" style="font-weight: bold; color: var(--primary-color);"></span></p>
+            <p>Novo Prazo Restante: <span id="resDepoisPrazo"></span></p>
+            <p>Novo Saldo Devedor (%): <span id="resDepoisSaldoPerc"></span></p>
+            <p>Novo Saldo Devedor (R$): <span id="resDepoisSaldoValor"></span></p>
+            <p><small>Novo Ideal Mensal F.C.:</small> <small><span id="resDepoisIdealFC"></span></small></p>
+            <p><small>Novo Ideal Mensal Total:</small> <small><span id="resDepoisIdealTotal"></span></small></p>
         </div>
     </div>
+
+    <div class="amortizacao-info">
+        <h3>Detalhes da Amortização</h3>
+        <p>Lance Ofertado: <span id="resLanceInfo"></span></p>
+        <p>Valor de Recursos Próprios: <span id="resLanceProprio"></span></p>
+        <p>Valor do Lance Embutido: <span id="resLanceEmbutido"></span></p>
+        <p><strong>Crédito Líquido a Receber:</strong> <span id="resCreditoLiquido" style="font-weight: bold;"></span></p>
+    </div>
+
+    <div id="parcelaDetalhada" class="hidden">
+        <h3>Composição da Nova Parcela</h3>
+        <p>Fundo Comum: <span id="resDetalheFC"></span></p>
+        <p>Taxa de Administração: <span id="resDetalheTA"></span></p>
+        <p>Fundo de Reserva: <span id="resDetalheFR"></span></p>
+        <p>Seguro de Vida: <span id="resDetalheSeguro"></span></p>
+    </div>
+
+    <div class="explicacao">
+        <h3>Entenda o Cálculo (Resumo)</h3>
+        <ol id="resExplicacao"></ol>
+    </div>
+
+    <button id="toggleMemoriaBtn" class="btn-memoria hidden">Deseja verificar a memória do cálculo?</button>
+    <div id="memoriaCalculo" class="memoria-calculo-container hidden">
+        <h4>Memória de Cálculo Detalhada</h4>
+        <ul id="memoriaCalculoContent" class="breakdown"></ul>
+    </div>
+</div>
     <script src="/JS/renegociacaoDeLance.js"></script>
 </body>
 </html>
