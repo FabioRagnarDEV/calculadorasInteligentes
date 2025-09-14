@@ -272,7 +272,7 @@ function calcularSimulacao(inputs) {
 function gerarExplicacaoDetalhada(resultado) {
     const { inputs, antes, depois } = resultado;
     let html = '';
-    html += `<li><strong>Situação Inicial:</strong> Sua dívida total (saldo devedor) era de <strong>${formatCurrency(antes.saldoDevedorValor)}</strong> (${formatPercent(antes.saldoDevedorPerc)} do plano), a ser paga em <strong>${antes.prazoRestante}</strong> meses.</li>`;
+    html += `<li><strong>Situação Inicial:</strong> Seu saldo devedor era de <strong>${formatCurrency(antes.saldoDevedorValor)}</strong> (${formatPercent(antes.saldoDevedorPerc)} do plano), a ser paga em <strong>${antes.prazoRestante}</strong> meses.</li>`;
     if (inputs.tipoPlano.includes('mais_por_menos') || inputs.tipoPlano.includes('justo')) {
         html += `<li><strong>Ajuste do Plano:</strong> Na contemplação, o saldo devedor é recalculado com base em 100% do Fundo Comum e com a incidência total da Taxa de Administração.</li>`;
     }
