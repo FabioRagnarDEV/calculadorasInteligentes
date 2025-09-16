@@ -73,6 +73,12 @@ function getInputs() {
 function simular(event) {
     event.preventDefault();
     const inputs = getInputs();
+    
+    if (inputs.valorCredito < 20000) {
+        alert('A renegociação de lance só é permitida para créditos a partir de R$ 20.000,00.');
+        return; // Interrompe a execução aqui mesmo, antes de calcular.
+    }
+
     if (inputs.valorCredito <= 0 || inputs.prazoTotal <= 0) {
         alert('Por favor, preencha o Valor do Crédito e o Prazo Total com valores válidos.');
         return;
@@ -88,6 +94,7 @@ function simular(event) {
     const resultado = calcularSimulacao(inputs);
     if (resultado) {
         exibirResultados(resultado);
+        
     }
 }
 
@@ -223,10 +230,18 @@ function calcularSimulacao(inputs) {
                 &nbsp;&nbsp;Ideal FR: ${formatPercent(novoIdealFRDepois)}<br>
                 &nbsp;&nbsp;<strong>Ideal Total: ${formatPercent(novoIdealTotalDepois)}</strong></li>`);
 
-        let pisoFCMensalIdeal = 0;
-        if (inputs.segmento === 'imovel') pisoFCMensalIdeal = 0.005;
-        else if (inputs.segmento === 'pesados') pisoFCMensalIdeal = 0.0075;
-        else pisoFCMensalIdeal = 0.01;
+            let pisoFCMensalIdeal = 0;
+            if (inputs.segmento === 'imovel') {
+            if (inputs.prazoTotal >= 200 && inputs.prazoTotal <= 240) {
+            pisoFCMensalIdeal = 0.002565; // 0,2565%
+            } else {
+                pisoFCMensalIdeal = 0.005; // 0,50%
+            }
+                } else if (inputs.segmento === 'pesados') {
+                pisoFCMensalIdeal = 0.0075;
+                } else { // Automóveis, Serviços, etc.
+                    pisoFCMensalIdeal = 0.01;
+                }   
 
         if (novoIdealFCDepois < pisoFCMensalIdeal && saldoDevedorFCDepois > 0) {
             const idealFCParaPiso = pisoFCMensalIdeal;
