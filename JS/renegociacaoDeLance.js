@@ -91,51 +91,53 @@ function simular(event) {
     }
 }
 
-// --- MOTOR DE CÁLCULO ---
+// --- MOTOR DE CÁLCULO (CORRIGIDO E DETALHADO) ---
 function calcularSimulacao(inputs) {
-    const resultado = { 
+    const resultado = {
         inputs,
         memoriaCalculo: []
     };
 
-    // --- Variáveis de escopo da função ---
-    let saldoDevedorTADepois = 0;
-    let saldoDevedorFRDepois = 0;
-    let prazoRestanteTemp = 0;
+    // --- ETAPA 1: Definição das Taxas ---
+    const taxaAdmTotal = inputs.taxaAdm;
+    const taxaAdmAntecipada = inputs.taxaAdmAdesao;
+    const taxaAdmRegular = taxaAdmTotal - taxaAdmAntecipada;
 
-    // --- Cálculos Iniciais ---
-    const taxaAdmMensal = inputs.prazoTotal > 0 ? inputs.taxaAdm / inputs.prazoTotal : 0;
+    const taxaAdmMensalRegular = inputs.prazoTotal > 0 ? taxaAdmRegular / inputs.prazoTotal : 0;
+    const taxaAdmMensalAntecipada = inputs.parcelasAdesao > 0 ? taxaAdmAntecipada / inputs.parcelasAdesao : 0;
     const fundoReservaMensal = inputs.prazoTotal > 0 ? inputs.fundoReserva / inputs.prazoTotal : 0;
     const fundoComumMensal = inputs.prazoTotal > 0 ? 1.0 / inputs.prazoTotal : 0;
 
-    let percentualPagoRealTA = taxaAdmMensal * inputs.parcelasPagas;
-    if (inputs.taxaAdmAdesao > 0 && inputs.parcelasPagas > 0) {
-        percentualPagoRealTA += inputs.taxaAdmAdesao;
-    }
+    // --- ETAPA 2: Apuração do Saldo Devedor "Antes" ---
+    const parcelasComTaxaAntecipadaPagas = Math.min(inputs.parcelasPagas, inputs.parcelasAdesao);
+    const taxaAntecipadaPaga = parcelasComTaxaAntecipadaPagas * taxaAdmMensalAntecipada;
+    const taxaRegularPaga = inputs.parcelasPagas * taxaAdmMensalRegular;
+    const percentualPagoRealTA = taxaAntecipadaPaga + taxaRegularPaga;
+
     const percentualPagoRealFC = fundoComumMensal * inputs.parcelasPagas;
     const percentualPagoRealFR = fundoReservaMensal * inputs.parcelasPagas;
 
     const saldoDevedorFCAntes = 1.0 - percentualPagoRealFC;
-    const saldoDevedorTAAntes = inputs.taxaAdm - percentualPagoRealTA;
+    const saldoDevedorTAAntes = taxaAdmTotal - percentualPagoRealTA;
     const saldoDevedorFRAntes = inputs.fundoReserva - percentualPagoRealFR;
-    let saldoDevedorPercAntes = saldoDevedorFCAntes + saldoDevedorTAAntes + saldoDevedorFRAntes;
-    
+    const saldoDevedorPercAntes = saldoDevedorFCAntes + saldoDevedorTAAntes + saldoDevedorFRAntes;
+
+    resultado.memoriaCalculo.push(`<li><strong>1. Saldo Devedor (SD) ANTES do Lance:</strong><br>
+        &nbsp;&nbsp;SD Fundo Comum: ${formatPercent(saldoDevedorFCAntes)}<br>
+        &nbsp;&nbsp;SD Taxa Adm: ${formatPercent(saldoDevedorTAAntes)}<br>
+        &nbsp;&nbsp;SD Fundo Reserva: ${formatPercent(saldoDevedorFRAntes)}<br>
+        &nbsp;&nbsp;<strong>SD Total Antes: ${formatPercent(saldoDevedorPercAntes)}</strong></li>`);
+
+    // Cálculo da parcela atual (o que o cliente paga no boleto)
     let fundoComumPercPagamento = 1.0;
     if (inputs.tipoPlano.includes('mais_por_menos')) {
         fundoComumPercPagamento = inputs.tipoPlano.includes('50') ? 0.50 : 0.75;
     }
-    const taxaAdmMensalPagamento = (inputs.tipoPlano.includes('justo')) ? 0 : taxaAdmMensal;
+    const taxaAdmMensalPagamentoCorrente = (inputs.tipoPlano.includes('justo')) ? 0 : taxaAdmMensalRegular;
     const idealMensalFCPagamento = inputs.prazoTotal > 0 ? fundoComumPercPagamento / inputs.prazoTotal : 0;
-    const taxaAdesaoMensal = inputs.parcelasAdesao > 0 ? (inputs.taxaAdmAdesao / inputs.parcelasAdesao) : 0;
-    let idealMensalTotalPagamento = idealMensalFCPagamento + taxaAdmMensalPagamento + fundoReservaMensal;
+    let idealMensalTotalPagamento = idealMensalFCPagamento + taxaAdmMensalPagamentoCorrente + fundoReservaMensal;
     if (inputs.taxaAdmAdesao > 0 && inputs.parcelasPagas < inputs.parcelasAdesao) {
-        idealMensalTotalPagamento += taxaAdesaoMensal;
-    }
-    
-    if (inputs.tipoPlano === "mais_por_menos_25" || inputs.tipoPlano === "justo_mais_por_menos") {
-        saldoDevedorPercAntes += 0.25;
-    } else if (inputs.tipoPlano === "mais_por_menos_50") {
-        saldoDevedorPercAntes += 0.50;
+        idealMensalTotalPagamento += taxaAdmMensalAntecipada;
     }
 
     resultado.antes = {
@@ -147,6 +149,7 @@ function calcularSimulacao(inputs) {
         idealMensalTotal: idealMensalTotalPagamento
     };
 
+    // --- ETAPA 3: LÓGICA DE AMORTIZAÇÃO ---
     const percentualLanceTotal = inputs.valorCredito > 0 ? inputs.valorLance / inputs.valorCredito : 0;
     let valorLanceEmbutido = 0;
     if (inputs.usarLanceEmbutido) {
@@ -164,15 +167,18 @@ function calcularSimulacao(inputs) {
         valorLanceRecursosProprios: valorLanceRecursosProprios,
     };
     
-    resultado.memoriaCalculo.push(`<li><strong>Cálculo do Saldo Devedor (SD) Pós-Lance:</strong><br>
-        &nbsp;&nbsp;SD Antes (Total): ${formatPercent(saldoDevedorPercAntes)}<br>
-        &nbsp;&nbsp;Lance Ofertado: - ${formatPercent(percentualLanceTotal)}</li>`);
-    
+    resultado.memoriaCalculo.push(`<li><strong>2. Amortização com Lance:</strong><br>
+        &nbsp;&nbsp;Valor do Lance (R$): ${formatCurrency(inputs.valorLance)}<br>
+        &nbsp;&nbsp;Percentual do Lance: ${formatPercent(percentualLanceTotal)} do crédito<br>
+        &nbsp;&nbsp;SD Total Antes: ${formatPercent(saldoDevedorPercAntes)}<br>
+        &nbsp;&nbsp;Amortização: - ${formatPercent(percentualLanceTotal)}<br>
+        &nbsp;&nbsp;<strong>SD Total Pós-Lance: ${formatPercent(saldoDevedorPercAntes - percentualLanceTotal)}</strong></li>`);
+
     if (inputs.tipoAbatimento === 'prazo') {
-        const idealMensalIntegral = fundoComumMensal + taxaAdmMensal + fundoReservaMensal;
+        const idealMensalIntegral = fundoComumMensal + taxaAdmMensalRegular + taxaAdmMensalAntecipada + fundoReservaMensal;
         const valorParcelaIntegral = inputs.valorCredito * idealMensalIntegral;
         const parcelasQuitadas = valorParcelaIntegral > 0 ? Math.floor(inputs.valorLance / valorParcelaIntegral) : 0;
-        
+
         resultado.depois.prazoRestante = resultado.antes.prazoRestante - parcelasQuitadas;
         resultado.depois.parcela = inputs.valorCredito * (idealMensalIntegral + inputs.seguroVida);
         resultado.depois.idealMensalFC = fundoComumMensal;
@@ -180,35 +186,42 @@ function calcularSimulacao(inputs) {
         resultado.depois.saldoDevedorPerc = saldoDevedorPercAntes - percentualLanceTotal;
         resultado.depois.saldoDevedorValor = resultado.depois.saldoDevedorPerc * inputs.valorCredito;
 
-        resultado.memoriaCalculo.push(`<li>&nbsp;&nbsp;= SD Depois (Total): <strong>${formatPercent(resultado.depois.saldoDevedorPerc)}</strong></li>`);
-        resultado.memoriaCalculo.push(`<li><strong>Cálculo da Redução de Prazo:</strong><br>
-            &nbsp;&nbsp;Ideal Mensal Integral (FC+TA+FR): ${formatPercent(idealMensalIntegral)}<br>
-            &nbsp;&nbsp;Valor da Parcela Integral: ${formatCurrency(valorParcelaIntegral)}<br>
-            &nbsp;&nbsp;Nº Parcelas Quitadas = ${formatCurrency(inputs.valorLance)} / ${formatCurrency(valorParcelaIntegral)} = <strong>${parcelasQuitadas} parcelas</strong><br>
-            &nbsp;&nbsp;Novo Prazo = ${resultado.antes.prazoRestante} - ${parcelasQuitadas} = <strong>${resultado.depois.prazoRestante} meses</strong></li>`);
+        resultado.memoriaCalculo.push(`<li><strong>3. Abatimento no PRAZO:</strong><br>
+            &nbsp;&nbsp;Valor da Parcela Integral (base): ${formatCurrency(valorParcelaIntegral)}<br>
+            &nbsp;&nbsp;Nº Parcelas Quitadas: ${parcelasQuitadas} (Lance / Parcela)<br>
+            &nbsp;&nbsp;Prazo Restante Final: ${resultado.depois.prazoRestante} meses</li>`);
 
     } else { // tipoAbatimento === 'parcela'
         const propFCAntes = saldoDevedorPercAntes > 0 ? saldoDevedorFCAntes / saldoDevedorPercAntes : 0;
         const propTAAntes = saldoDevedorPercAntes > 0 ? saldoDevedorTAAntes / saldoDevedorPercAntes : 0;
         const propFRAntes = saldoDevedorPercAntes > 0 ? saldoDevedorFRAntes / saldoDevedorPercAntes : 0;
 
-        const saldoDevedorFCDepois = saldoDevedorFCAntes - (percentualLanceTotal * propFCAntes);
-        saldoDevedorTADepois = saldoDevedorTAAntes - (percentualLanceTotal * propTAAntes); // Atribui à variável de escopo
-        saldoDevedorFRDepois = saldoDevedorFRAntes - (percentualLanceTotal * propFRAntes); // Atribui à variável de escopo
-        
-        prazoRestanteTemp = resultado.antes.prazoRestante; // Atribui à variável de escopo
-        
+        const amortizacaoFC = percentualLanceTotal * propFCAntes;
+        const amortizacaoTA = percentualLanceTotal * propTAAntes;
+        const amortizacaoFR = percentualLanceTotal * propFRAntes;
+
+        resultado.memoriaCalculo.push(`<li><strong>3. Abatimento na PARCELA (Diluição Proporcional):</strong><br>
+            &nbsp;&nbsp;Amortização em FC: -${formatPercent(amortizacaoFC)}<br>
+            &nbsp;&nbsp;Amortização em TA: -${formatPercent(amortizacaoTA)}<br>
+            &nbsp;&nbsp;Amortização em FR: -${formatPercent(amortizacaoFR)}</li>`);
+
+        const saldoDevedorFCDepois = saldoDevedorFCAntes - amortizacaoFC;
+        const saldoDevedorTADepois = saldoDevedorTAAntes - amortizacaoTA;
+        const saldoDevedorFRDepois = saldoDevedorFRAntes - amortizacaoFR;
+
+        let prazoRestanteTemp = resultado.antes.prazoRestante;
+
         let novoIdealFCDepois = prazoRestanteTemp > 0 ? saldoDevedorFCDepois / prazoRestanteTemp : 0;
         let novoIdealTADepois = prazoRestanteTemp > 0 ? saldoDevedorTADepois / prazoRestanteTemp : 0;
         let novoIdealFRDepois = prazoRestanteTemp > 0 ? saldoDevedorFRDepois / prazoRestanteTemp : 0;
         let novoIdealTotalDepois = novoIdealFCDepois + novoIdealTADepois + novoIdealFRDepois;
         
-        resultado.memoriaCalculo.push(`<li>&nbsp;&nbsp;= SD Depois (Total): <strong>${formatPercent(novoIdealTotalDepois * prazoRestanteTemp)}</strong></li>`);
-        resultado.memoriaCalculo.push(`<li><strong>Cálculo dos Novos Ideais Mensais (Redução de Parcela):</strong><br>
-            &nbsp;&nbsp;Novo Ideal FC = ${formatPercent(saldoDevedorFCDepois)} / ${prazoRestanteTemp} meses = <strong>${formatPercent(novoIdealFCDepois)}</strong><br>
-            &nbsp;&nbsp;Novo Ideal TA = ${formatPercent(saldoDevedorTADepois)} / ${prazoRestanteTemp} meses = <strong>${formatPercent(novoIdealTADepois)}</strong><br>
-            &nbsp;&nbsp;Novo Ideal FR = ${formatPercent(saldoDevedorFRDepois)} / ${prazoRestanteTemp} meses = <strong>${formatPercent(novoIdealFRDepois)}</strong><br>
-            &nbsp;&nbsp;Novo Ideal Total (Soma) = <strong>${formatPercent(novoIdealTotalDepois)}</strong></li>`);
+        resultado.memoriaCalculo.push(`<li><strong>4. Nova Parcela (Ideal Mensal):</strong><br>
+                &nbsp;&nbsp;Cálculo: Novo SD de cada componente / Prazo Restante (${prazoRestanteTemp}m)<br>
+                &nbsp;&nbsp;Ideal FC: ${formatPercent(novoIdealFCDepois)}<br>
+                &nbsp;&nbsp;Ideal TA: ${formatPercent(novoIdealTADepois)}<br>
+                &nbsp;&nbsp;Ideal FR: ${formatPercent(novoIdealFRDepois)}<br>
+                &nbsp;&nbsp;<strong>Ideal Total: ${formatPercent(novoIdealTotalDepois)}</strong></li>`);
 
         let pisoFCMensalIdeal = 0;
         if (inputs.segmento === 'imovel') pisoFCMensalIdeal = 0.005;
@@ -216,8 +229,6 @@ function calcularSimulacao(inputs) {
         else pisoFCMensalIdeal = 0.01;
 
         if (novoIdealFCDepois < pisoFCMensalIdeal && saldoDevedorFCDepois > 0) {
-            resultado.memoriaCalculo.push(`<li><strong>Lógica Híbrida Ativada (Piso Mínimo):</strong><br>
-                &nbsp;&nbsp;Novo Ideal FC (${formatPercent(novoIdealFCDepois)}) é menor que o piso de ${formatPercent(pisoFCMensalIdeal)}.</li>`);
             const idealFCParaPiso = pisoFCMensalIdeal;
             const propTaxasSobreFC = novoIdealFCDepois > 0 ? (novoIdealTADepois + novoIdealFRDepois) / novoIdealFCDepois : 0;
             const idealTaxasParaPiso = idealFCParaPiso * propTaxasSobreFC;
@@ -226,11 +237,14 @@ function calcularSimulacao(inputs) {
             const saldoDevedorAtual = novoIdealTotalDepois * prazoRestanteTemp;
             const excessoLancePerc = saldoDevedorParaPiso - saldoDevedorAtual;
             const parcelasQuitadasComExcesso = idealTotalPiso > 0 ? Math.floor(excessoLancePerc / idealTotalPiso) : 0;
-            
+
             prazoRestanteTemp -= parcelasQuitadasComExcesso;
             novoIdealTotalDepois = idealTotalPiso;
             novoIdealFCDepois = idealFCParaPiso;
-            resultado.memoriaCalculo.push(`<li>&nbsp;&nbsp;Parcela recalculada para o piso e ${parcelasQuitadasComExcesso} parcelas quitadas com o excedente.</li>`);
+            
+            resultado.memoriaCalculo.push(`<li><strong>5. Ajuste de Piso Mínimo:</strong><br>
+                &nbsp;&nbsp;Ideal FC calculado (${formatPercent(novoIdealFCDepois)}) < Piso Mínimo (${formatPercent(pisoFCMensalIdeal)}).<br>
+                &nbsp;&nbsp;Recalculando parcela com base no piso e quitando ${parcelasQuitadasComExcesso} parcelas com o excedente.</li>`);
         }
 
         resultado.depois.prazoRestante = prazoRestanteTemp;
@@ -240,39 +254,33 @@ function calcularSimulacao(inputs) {
         resultado.depois.saldoDevedorPerc = prazoRestanteTemp > 0 ? novoIdealTotalDepois * prazoRestanteTemp : 0;
         resultado.depois.saldoDevedorValor = resultado.depois.saldoDevedorPerc * inputs.valorCredito;
     }
-    
-    let idealTaDepoisFinal = 0;
-    let idealFrDepoisFinal = 0;
+
+    const prazoFinal = resultado.depois.prazoRestante;
+
+    let idealTaDepoisFinal = prazoFinal > 0 ? (saldoDevedorTAAntes - (percentualLanceTotal * (saldoDevedorTAAntes / saldoDevedorPercAntes))) / prazoFinal : 0;
+    let idealFrDepoisFinal = prazoFinal > 0 ? (saldoDevedorFRAntes - (percentualLanceTotal * (saldoDevedorFRAntes / saldoDevedorPercAntes))) / prazoFinal : 0;
 
     if (inputs.tipoAbatimento === 'prazo') {
-        idealTaDepoisFinal = taxaAdmMensal;
+        idealTaDepoisFinal = taxaAdmMensalRegular;
         idealFrDepoisFinal = fundoReservaMensal;
-    } else {
-        // Usa os novos saldos devedores de taxa divididos pelo prazo restante final
-        idealTaDepoisFinal = prazoRestanteTemp > 0 ? saldoDevedorTADepois / prazoRestanteTemp : 0;
-        idealFrDepoisFinal = prazoRestanteTemp > 0 ? saldoDevedorFRDepois / prazoRestanteTemp : 0;
     }
-    
+
     resultado.detalhesParcela = {
         fc: resultado.depois.idealMensalFC * inputs.valorCredito,
         ta: idealTaDepoisFinal * inputs.valorCredito,
         fr: idealFrDepoisFinal * inputs.valorCredito,
         seguro: inputs.seguroVida * inputs.valorCredito
     };
-    
-    resultado.memoriaCalculo.push(`<li><strong>Cálculo do Valor da Nova Parcela:</strong><br>
-        &nbsp;&nbsp;Valor = (Novo Ideal Total + Ideal Seguro) * Crédito<br>
-        &nbsp;&nbsp;Valor = (${formatPercent(resultado.depois.idealMensalTotal)} + ${formatPercent(inputs.seguroVida)}) * ${formatCurrency(inputs.valorCredito)} = <strong>${formatCurrency(resultado.depois.parcela)}</strong></li>`);
 
     resultado.explicacao = gerarExplicacaoDetalhada(resultado);
     return resultado;
 }
 
-// --- FUNÇÃO PARA GERAR A EXPLICAÇÃO TEXTUAL ---
 function gerarExplicacaoDetalhada(resultado) {
     const { inputs, antes, depois } = resultado;
     let html = '';
     html += `<li><strong>Situação Inicial:</strong> Seu saldo devedor era de <strong>${formatCurrency(antes.saldoDevedorValor)}</strong> (${formatPercent(antes.saldoDevedorPerc)} do plano), a ser paga em <strong>${antes.prazoRestante}</strong> meses.</li>`;
+    // CORRIGIDO: 'mais_por_menor' para 'mais_por_menos'
     if (inputs.tipoPlano.includes('mais_por_menos') || inputs.tipoPlano.includes('justo')) {
         html += `<li><strong>Ajuste do Plano:</strong> Na contemplação, o saldo devedor é recalculado com base em 100% do Fundo Comum e com a incidência total da Taxa de Administração.</li>`;
     }

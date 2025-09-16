@@ -222,13 +222,25 @@ header h1 {
     padding: 15px;
     margin-top: 10px;
 }
+
 .memoria-calculo-container .breakdown {
     list-style-type: none;
     padding-left: 0;
 }
+
 .memoria-calculo-container li {
     font-family: 'Courier New', Courier, monospace;
     font-size: 14px;
+    line-height: 1.5;                 
+    padding-bottom: 1rem;             
+    margin-bottom: 1rem;              
+    border-bottom: 1px dashed #ccc;  
+}
+
+.memoria-calculo-container li:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
 }
 
 footer {
