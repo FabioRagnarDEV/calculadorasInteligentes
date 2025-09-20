@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- INICIALIZAÇÃO DOS EVENTOS ---
     const form = document.getElementById('calcForm');
     if (form) {
-        // O evento principal agora é o submit do formulário
         form.addEventListener('submit', simular);
     }
     document.getElementById('usarLanceEmbutido').addEventListener('change', toggleLanceEmbutido);
@@ -91,6 +90,14 @@ function simular(event) {
         alert('Por favor, informe o percentual do crédito a ser usado no lance embutido.');
         return;
     }
+
+    const planoComLimite25 = (inputs.tipoPlano === 'volks_conforto'); // << AJUSTE AQUI
+
+    if (inputs.usarLanceEmbutido && planoComLimite25 && inputs.percentualLanceEmbutido > 0.25) {
+        alert('Para este plano específico, o percentual do lance embutido não pode exceder 25%.');
+        return; // Interrompe a execução
+    }
+
     const resultado = calcularSimulacao(inputs);
     if (resultado) {
         exibirResultados(resultado);
@@ -233,9 +240,9 @@ function calcularSimulacao(inputs) {
             let pisoFCMensalIdeal = 0;
             if (inputs.segmento === 'imovel') {
             if (inputs.prazoTotal >= 200 && inputs.prazoTotal <= 240) {
-            pisoFCMensalIdeal = 0.002565; // 0,2565%
+            pisoFCMensalIdeal = 0.002565; 
             } else {
-                pisoFCMensalIdeal = 0.005; // 0,50%
+                pisoFCMensalIdeal = 0.005;
             }
                 } else if (inputs.segmento === 'pesados') {
                 pisoFCMensalIdeal = 0.0075;
